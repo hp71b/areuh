@@ -1,0 +1,125 @@
+.TH AMG 1L
+.SH NAME
+amg \- areuh message generator
+.SH SYNOPSIS
+.B amg
+[
+.I first message
+]
+.SH DESCRIPTION
+.I Amg
+est un générateur de table de messages pour le HP-71.
+Il admet sur l'entrée standard une suite de messages, un
+par ligne et place sur la sortie standard un texte source
+(à assembler avec
+.BR aas (1L))
+constituant ainsi une table de messages à insérer dans
+un source de fichier Lex.
+.PP
+Un message est spécifié suivant le format suivant :
+.RS 5n
+.nf
+	label:message
+.fi
+.RE
+où
+.I label
+est une étiquette symbolique utilisée par l'assembleur et
+.I message
+est le message. Attention aux espaces superflus.
+.PP
+Les messages sont des suites de caractères. Certains caractères ont
+une signification spéciale. Il s'agit de :
+.TP 15
+.B \[
+Introduit un
+.I building block. Si c'est un building block du système,
+.B amg
+y fait référence, sinon un nouveau building block est généré.
+Le caractère
+.B \]
+marque la fin du building block.
+.TP
+.B ^
+Indique une insertion dans le message. Voir les IDS I pour plus
+de détails.
+.TP
+<backslash>
+Neutralise la signification spéciale du caractère suivant, ou
+introduit un caractère non imprimable par son code octal.
+.PP
+Le système d'exploitation du HP-71 contient 17 buildings-blocks
+intégrés.
+.B Amg
+les reconnaît automatiquement, il s'agit de :
+.RS 5n
+.nf
+ 0	"Illegal "
+ 1	" Expected"
+ 2	" Not Found"
+ 3	"Context"
+ 4	"File"
+ 5	" w/o "
+ 6	"Invalid "
+ 7	"Stat"
+ 8	"Too "
+ 9	": Align then ENDLN"
+10	"Transform"
+11	"Inf"
+12	" Input"
+13	" Ovfl"
+14	"Pull"
+15	/* insert message : ### of ### */
+16	" Protect"
+.fi
+.RE
+.PP
+.B Amg
+définit le symbole
+.B =MSGTBL
+destiné à être référencé dans l'en-tête du fichier Lex. Les symboles
+définis par l'utilisateur sont aussi définis, mais ils sont exportés
+seulement si l'utilisateur a placé un signe
+.B =
+au début de l'étiquette.
+.PP
+L'exemple suivant est la table des messages de JPC Rom :
+.RS 5n
+.nf
+=eHEAD:JPC 
+=eDRIVE:Driver Lex File
+=eNSTRG:Not Found
+=eSTRUC:Structure Mismatch
+=eIPRMP:[Invalid ]Prompt
+=eIFMT:[Invalid ]Format
+=eIDIM:#Dims
+=eINOVR:Var[ Not Found]
+=eSUN:Sun[day]
+=eMON:Mon[day]
+=eTUE:Tues[day]
+=eWED:Wednes[day]
+=eTHU:Thurs[day]
+=eFRI:Fri[day]
+=eSAT:Satur[day]
+=eFNINT:Function Interrupted
+=eOBSOL:Removed Keyword
+=eCPYRG:(c) 1986, 1987, 1988 PPC-Paris
+.fi
+.RE
+.SH DIAGNOSTICS
+.PP
+.B Amg
+signale une erreur lorsqu'aucun message ne respecte la règle du
+premier message (longueur multiple de 4), mais génère un source
+quand même.
+.SH AUTHORS
+Pierre David
+Janick Taillandier
+.SH SEE ALSO
+aas(1L),
+ald(1L),
+adp(1L),
+cp71(1L).
+.br
+.I "IDS vol I"
+for HP-71.

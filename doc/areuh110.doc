@@ -1,0 +1,148 @@
+			 USING AREUH WITH A HP110
+
+		      Michael Markov (PPC Paris 301)
+
+
+Using AREUH with an HP110 presents a variety of problems, most of which are 
+related to the fact that AREUH requires about 200+K of memory to run. This leaves
+you with 70K of EDISC for your source code, intermediate files, listing files,
+and anything else you may feel you absolutely have to have, such as ED110, in
+case you need to edit the source file, or HPILLINK to upload and download LEX
+files.... Keep in mind that listing files are roughly twice the size of source
+files, and that the object file takes some room. Needless to say, this means
+that you cannot keep the 150K byte AAS.EXE program in the A: drive.
+
+Therefore, HP100 owners who still want to use AREUH for serious work must resign
+themselves to loading AAS.EXE from disk each time they wish to assemble a LEX
+file. Worse, unless they are working with source files of 20K or less, they must
+also resign themselves to either sending the listing file to a disk file, or to
+a printer. Either approach means that execution time is much slower than you
+would expect from the AREUH documentation. Still, my HP110 and AREUH allow me to assemble a 42K source code files about 4 minutes, while my
+HP71 requires over half an hour to do the same job, in spite of a 1.9 times
+speed-up. (Yes, I am considering the purchase of a 512K base Portable Plus with
+a 1 or 2 Meg RAM card, but considering the cost, maybe I would be better off
+with a full-size desk top machine.)
+
+Let me hasten to say that 20K source files are quite sufficient for individual
+keywords. Assembling such small files is unbelievably fast, and very convenient
+for debugging sessions. You will have few problems assembling such files using
+either the compatibility mode or the modular mode. However, source code files
+show a definite tendency to grow: TXTSORTS, once less than 13K, is now 42K. TKS,
+the source for DISASMLX, grew to 77K from similar beginnings. The following
+material describes the work-arounds I developed to allow me to assemble such
+source files more or less painlessly.
+
+Since the major space and memory waster is saving the listing file, you must ask
+yourself whether you need a listing file. In the compatibility mode, you can use
+the LIST OFF and LIST ON keywords to suppress the listing file for portions of
+the files that you have already assembled successfully in previous sessions.
+For example, with the LIST OFF suppressing most of the TKS listing, DISASMLX
+can be assembled in about two minutes. This is definitely worth taking advantage
+of -- just list the portion of the source that includes any new keyword you add
+to the file you are building. This will let you know if any jumps are out of
+range, which is the most common problem when adding a new keyword to a file, 
+assuming you have already tested and assembled the keyword separately. However,
+there always comes the time when you need a complete listing for code-packing/
+code review purposes. When this happens, I use the following procedure:
+
+1)  If your source code file is more than 20K bytes long, prepare a work disk
+    that contains ONLY HPILLINK, the source code and any symbol files you use,
+    to include the entry point files found in the AREUH disk \LIB subdirectory.
+    You should first format this disk, then copy the symbol files from AREUH to
+    the work disk with   COPY C:\LIB\*.EP D: (If you have only one drive, first
+    copy the files to the A: drive, then to the work disk. Next, copy any
+    special Symbol files  to be loaded with RDSYMB. Finally, copy the source
+    code file to the work disk. This may sound complicated, but if you use AREUH
+    frequently, you will prepare several work disks in a single session, so that
+    all you have to do in this step is add the source code. You can reuse such
+    work disks at any time by simply deleting old source and listing files. Do
+    not forget to add any special symbol files. When your souce file grows
+    beyond the size that can be edited with MEMOMAKER, you may want to add your
+    favorite EDitor software. While this limits the space remaining free for the
+    source and listing files, it is very convenient.
+    
+    You should seriously consider breaking-up your larger source code files into
+    smaller files (20K or less) that can be assembled from the A: drive, as
+    execution time suffers badly when assembling the source from mass storage.
+    The AREUH loader-linker will allow you to combine the resulting intermediate
+    files into a single large LEX file. See WRITHEAD.BAS and WRITHEAD.DOC on the
+    disk. These files help a lot when using the modular mode.
+
+    If you do NOT use supported entry points, you can assemble source files of
+    up to about 60K from the A: drive, since you do not need to have the entry
+    point files in either the A: drive (current directory) or the C: drive...
+ 
+2)  Format a blank 3.5" disk in drive C:
+3)  Backup your HP110 with COPY *.* C:    (from MS-DOS)
+4)  Delete all files except the source code file to be assembled, and PACK.COM.
+    If the file is in excess of 30K or 60K (see step 1 above), delete everything
+    except PACK.COM since you have to assemble the source from the work disk
+    prepared in step 1 above.
+NOTE: If you use AREUH frequently, you will already have back-up disks, and you
+    need only back-up current work in progress.
+5)  PACK the A: drive (Type PACK [Return]).
+6)  You may now delete PACK.COM if you are real short of memory.
+7)  EXIT MS-DOS, and press the f6 key (System Configuration).
+8)  Increase the Memory allocation to 200+ Kbytes.
+9)  Exit the configuration menu, and return to MS-DOS.
+10) Replace the disk in your C: drive with the AREUH disk.
+11) Copy any entry point files required from the C:\LIB subdirectory to the A:
+    drive (unless these files are available on your work disk).
+11) Load AAS.EXE with C:AAS - The interactive mode is a must if you have only
+    one drive. Otherwise, you can use toggles documented in the README file to
+    more or less duplicate what follows.
+12) Once the interactive menu comes up, replace the AREUH disk with your work
+    disk. This may be the work disk prepared in step 1, or the back-up disk
+    created in step 2 and 3. This disk will be used to save the listing file.
+13) Now, you are ready to respond to the prompts in the interactive menu:
+
+                   Source in drive A:      Source in drive C:
+    Source file :  TXTSORTS.TEX            C:TXTSORTS.TEX
+    Object file :  TSORT                   TSORT             output to A: drive
+    Listing File : C:LIST                  C:LIST            listing to disk
+    Cross Reference: Y                     Y                 Yes, nice to have
+    Page length :  88                      88                I use 8 lines per
+             						     inch to save paper
+
+While assembling version 7 of the above LEX, I got an object file of 3066 bytes
+and a listing file of 74K bytes. The LEX itself, after conversion to HPILLINK
+format with the AREUH A2LEX.EXE program and downloading to the HP71 was 1513
+bytes long (TSORTLX7).
+
+You can read the source from one external drive, direct the object file to the
+same disk, while having the AREUH disk in a second drive, and send the listing
+file to a third drive, assuming you can borrow one (I used a cassette drive to
+check this.)  This flexibility should allows HP110 users to assemble LEX files
+of up to 32K. 
+
+14) I actually work with two disk drives, which simplifies things. I keep the
+    AREUH disk in drive C: and the work disk in drive D:, so that I respond to
+    the Listing file : prompt with  D:LIST. Minor difference that makes life
+    somewhat easier.
+
+15) Now, I look at the listing file using Ed Gilbert's Editor, which I keep on
+    the work disk:  D:ED D:LIST     (EDit file LIST on drive D:). If you have
+    only one drive, you may do the same using drive C:
+
+16) If there are errors, edit the source file and go back to step 1. Otherwise,
+    put the AREUH disk in drive C: and  execute the A2LEX program:
+
+    C:A2LEX  TSORT    This creates a new file in HPILLINK format with the LEX
+                      extension.
+
+17) Finally, you are ready to download the LEX file to your HP71 using HPILLINK:
+        
+    D:HPILLINK (or, if you have only one drive, replace the AREUH disk with your
+               work disk, and use C:HPILLINK)
+
+18) See the PCCOMM file elsewhere on this disk to findout how to transfer files
+    between your HP-17 and your HP110 with a minimum of effort.
+
+NOTE: The HP-71 MAY REMAIN ON THE LOOP WHILE ALL OF THE ABOVE IS GOING ON,
+PROVIDED THAT YOU FIRST EXECUTE  "CONTROL OFF".
+
+WARNING: The HP110 may tell you that your drive has a bad unit if you try any
+mass storage operation after the HP-71 has been the controller. This is because
+the HP110 usually works with 512 byte mass storage sectors, while the HP71
+normally uses 256 byte sectors. Reply Ignore to the problem prompt. Thereafter,
+you should no longer have problems.           

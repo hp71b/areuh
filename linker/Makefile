@@ -1,0 +1,99 @@
+#
+# Makefile genere automatiquement par mkmf (le masque par defaut a ete adapte)
+#
+
+CFLAGS	      = -O
+LDFLAGS	      =
+LIBS	      =
+SYSLIBS	      =
+BINDEST	      = /usr/local/bin
+
+#
+# S'il y a plus d'un programme, il faut aussi remplacer la cible
+# $(PROGRAM) par autant de cibles que necessaire.
+#
+
+PROGRAM       = ald
+
+SRCS	      = exp.c \
+		lerror.c \
+		linit.c \
+		llist.c \
+		lmain.c \
+		lpass.c \
+		lutil.c \
+		mdep.c
+
+HDRS	      = common.h \
+		err.h \
+		flag.h \
+		lglobal.h
+
+EXTHDRS	      = /usr/include/stdio.h \
+		/usr/include/sys/stat.h \
+		/usr/include/sys/types.h
+
+OBJS	      = exp.o \
+		lerror.o \
+		linit.o \
+		llist.o \
+		lmain.o \
+		lpass.o \
+		lutil.o \
+		mdep.o
+
+MANDEST	      = /usr/local/man/man1.Z
+
+MANPAGES      = ald.1
+
+#
+# Les cibles :
+#	all : compiler tout
+#	clean : effacer tout
+#	depend : recalculer toutes les dependances et les inserer ici
+#	install : installe le programme dans l'aborescence
+#	tags : cree les tags
+#
+
+all:		$(PROGRAM)
+
+$(PROGRAM):     $(OBJS) $(LIBS)
+		cc $(LDFLAGS) $(OBJS) $(LIBS) $(SYSLIBS) -o $(PROGRAM)
+
+clean:;		rm -f $(OBJS) $(PROGRAM) core tags
+
+depend:;	mkmf ROOT=$(ROOT)
+
+install:	$(PROGRAM)
+		-strip $(PROGRAM)
+		if [ $(BINDEST) != . ] ; \
+		then \
+		    (cd $(BINDEST) ; rm -f $(PROGRAM)) ; \
+		    cp $(PROGRAM) $(BINDEST) ; \
+		    if [ "$(MANPAGES)" != none ] ; \
+		    then \
+			(cd $(MANDEST) ; rm -f $(MANPAGES)) ; \
+			for i in $(MANPAGES) ; \
+			do \
+			    compress < $$i > $(MANDEST)/$$i ; \
+			done ; \
+		    fi ; \
+		fi
+
+tags:           $(HDRS) $(SRCS)
+		ctags $(HDRS) $(SRCS)
+
+#
+# Dependances calculees automatiquement par mkmf.
+# Ne rien changer apres cette ligne !
+#
+###
+exp.o: flag.h lglobal.h common.h /usr/include/stdio.h err.h
+lerror.o: lglobal.h common.h /usr/include/stdio.h err.h
+linit.o: lglobal.h common.h /usr/include/stdio.h err.h
+llist.o: lglobal.h common.h /usr/include/stdio.h err.h
+lmain.o: lglobal.h common.h /usr/include/stdio.h err.h
+lpass.o: lglobal.h common.h /usr/include/stdio.h err.h
+lutil.o: lglobal.h common.h /usr/include/stdio.h err.h
+mdep.o: flag.h lglobal.h common.h /usr/include/stdio.h err.h \
+	/usr/include/sys/types.h /usr/include/sys/stat.h

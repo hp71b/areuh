@@ -1,0 +1,363 @@
+
+          ASSEMBLEUR / EDITEUR DE LIENS
+                   POUR LE HP71
+
+
+
+I - PRINCIPE
+
+
+A: Présentation
+
+Le  système  de  développement  pour HP71 que nous
+présentons ici est basé sur un  assembleur  et  un
+éditeur de liens écrits en Langage C.
+
+Ce  système  fonctionne à l'heure actuelle sur des
+ordinateurs différents :
+
+- Les ordinateurs fonctionnant sous système  HP-UX
+en particulier, et sous système Unix en général.
+
+-  les  ordinateurs  Atari  520  et  1040  ST sous
+système d'exploitation TOS.
+
+- une adaptation est en cours pour l'ordinateur HP
+Vectra et autres IBM PC sous système MS-DOS.
+
+Tous  nos efforts se sont portés vers la réduction
+des   temps   d'assemblage.    Voir   les    temps
+d'exécution   donnés   en  exemple  pour  plus  de
+détails.
+
+
+B: Introduction à l'assembleur
+
+L'assembleur a deux modes de fonctionnement :
+
+Le mode "assemblage complet", qui  permet  d'avoir
+la compatibilité avec le "machin" (l'assembleur du
+module  Forth).   En   particulier,   toutes   les
+macro-opérations  de génération de fichiers lex ou
+bin sont supportées.
+
+Le  mode  "assemblage   séparé"   permet   de   se
+rapprocher  des  conditions de travail de l'équipe
+de  développement  du  HP71  aux  laboratoires  de
+Corvallis (OR 97330) en autorisant l'assemblage de
+modules séparés, et leur réunion en  seul  fichier
+par l'intermédiaire de l'éditeur de liens.
+
+
+C: Avantages et inconvénients
+
+Parmi   les  nombreux  avantages  que  procure  ce
+système, nous pouvons citer :
+
+Utilisation des points d'entrée HP  sans  avoir  à
+les  déclarer  explicitement  par une opération du
+type EQU.
+
+Edition  d'une  table  des   références   croisées
+donnant  pour chaque symbole le nom, la valeur, la
+ligne où il est déclaré et les lignes  où  il  est
+utilisé.
+
+Introduction   de  nouveaux  opérateurs  dans  les
+expressions,  et  possibilité   d'introduire   des
+valeurs en binaire.
+
+Les  noms des labels sont maintenant significatifs
+sur 12 caractères.
+
+Quant   aux   inconvénients,   il    manque    les
+pseudo-opérations  FORTH,  WORD et WORDI. Et, bien
+sûr, il faut un "gros" ordinateur.
+
+
+D: Principe de l'assemblage séparé
+
+L'assemblage d'un fichier en  modules  séparés  se
+fait en deux phases.
+
+IL   faut  d'abord  assembler  tous  les  fichiers
+(modules) constituant le source. Ensuite, il  faut
+procéder  à  l'édition de liens, qui rassemble ces
+modules en un seul fichier.
+
+Si il s'avère nécessaire de modifier une partie du
+texte  source, il suffit seulement de ré-assembler
+le  module  contenant  ce  texte,  et  de  refaire
+l'édition de liens. Le gain de temps est énorme.
+
+Cette   gestion   modulaire  permet  également  un
+traitement plus efficace des  labels.   Un  module
+peut  appeler  une  routine  écrite  dans un autre
+module à partir du moment où le label est  précédé
+d'un  signe '=' dans les modules concernés. Ceci a
+pour rôle de déclarer le label  externe  (dans  le
+module  appelant)  ou public (dans le module ou le
+label est déclaré) et accessible à tous.  Ce  sont
+les labels globaux.
+
+A   cette  catégorie  s'ajoute  celle  des  labels
+locaux. Ils ne comportent pas de signe '=', et des
+modules  peuvent  avoir des labels portant le même
+nom.  Ceci permet d'avoir, par exemple,  plusieurs
+labels  "argerr" dans des modules différents, sans
+causer le moindre conflit.
+
+C'est le même système que celui employé par HP, et
+décrit  dans  les  IDS  Vol.  I  (ch. 16). Seul ce
+système  permet   le   développement   de   grands
+programmes en assembleur.
+
+
+
+II - DIFFERENCES AVEC LE "MACHIN"
+
+
+A: Sélection du mode
+
+La  sélection  du  mode  d'assemblage  (complet ou
+séparé) est faite par la présence de la macro  LEX
+ou BIN en première ligne du fichier source.
+
+B: Majuscules / Minuscules
+
+Mis à part les labels, tous les op-codes et toutes
+les  expressions  sont  compris  aussi   bien   en
+majuscules qu'en minuscules.
+
+C: Macro-opération interdites
+
+En  assemblage  séparé,  les  pseudo-opérations de
+génération de fichiers LEX ou BIN sont interdites.
+Ainsi,  LEX,  ID,  MSG,  POLL, ENTRY, CHAR, TOKEN,
+KEY, ENDTXT, BIN et  CHAIN  sont  interdites  hors
+d'un  assemblage  complet.   On  exerce  ainsi  un
+contrôle plus précis sur la génération du code.
+
+Par ailleurs, les macro FORTH, WORD et WORDI  sont
+interdites.
+
+Seule  la  première utilisation de TITLE est prise
+en compte.
+
+D: Macro-opérations ajoutées
+
+En  premier  lieu,  il  y a RDSYMB (ReaD SYMBols).
+Elle permet de charger un  fichier  contenant  des
+points d'entrée sans avoir à attendre l'édition de
+liens. Par exemple, en  assemblage  complet,  ceci
+permet  d'avoir  les points d'entrée supportés par
+HP (fichier "hp71.ep"). La syntaxe est :
+
+       RDSYMB <fichier>
+
+
+Ensuite,  nous  avons  l'assemblage  conditionnel.
+Par exemple, si nous avons :
+
+AREUH  EQU    1
+
+       IF     AREUH
+       P=P+1
+       RTN
+       ELSE
+       ASRB
+       C+P+1
+       ENDIF
+
+Seul le code P=P+1 et RTN sera assemblé.
+
+Inversement,  si  AREUH avait été déclaré avec une
+valeur nulle, le code ASRB  et  C+P+1  aurait  été
+assemblé.  Ceci  permet  de  gérer  simplement des
+versions différents d'un même programme  (versions
+de  mise  au point).  Attention cependant :  il ne
+peut y avoir  imbrication  d'une  telle  structure
+conditionnelle.
+
+E: Opcodes ajoutés
+
+D0=HEX  et  D1=HEX  (présents, mais non documentés
+dans le "machin") fonctionnent à merveille.
+
+LC(6) et CON(6) (utilisés par HP) sont présents.
+
+F: Valeurs numériques
+
+Les   valeurs   numériques   calculées   dans  les
+expressions,   ou   renvoyées   par   des   labels
+comportent  six  chiffres hexadécimaux et non cinq
+comme dans le "machin". Comme dans les IDS.
+
+En revanche, les valeurs affichées dans les tables
+de  symboles  le sont sur cinq chiffres seulement.
+Cette limitation ne concerne  que  l'affichage  et
+non  le  stockage  interne.  Ceci  est  conforme à
+l'affichage fourni par l'assembleur des IDS, et  a
+été  conservé en raison de l'habitude acquise à la
+lecture des adresses du HP71.
+
+G: Les Expressions
+
+Les  expressions  peuvent  contenir des labels, la
+valeur du compteur ordinal (PC), des constantes et
+des  opérateurs.   Il  n'y  a pas de limitation du
+niveau d'imbrication des parenthèses.
+
+Maintenant,  les  labels sont significatifs sur 12
+caractères.
+
+Le   symbole  '*'  (en  position  d'opérande)  est
+considéré comme la  valeur  du  compteur  ordinal.
+Dans  le  cas  d'une  compilation  séparée,  cette
+valeur est la valeur réelle, tenant compte  de  la
+position du module dans le fichier complet.
+
+Les constantes de valeur supérieure à six chiffres
+hexadécimaux sont tronquées.
+
+Les constantes Ascii sont délimitées soit par  des
+apostrophes ('), soit par des anti-slash (\).
+
+Un  nouveau  type  de  constante est ajoutée : les
+constantes binaires. Elles doivent être  précédées
+d'un signe '%', comme dans :  %01110001
+
+Les   opérateurs  :   nous  en  donnons  la  liste
+complète, par ordre de priorité décroissante.  Les
+opérateurs de même priorité sont évalués de gauche
+à droite.
+
+~ (*256+)               ^  (puissance)
+- (moins  unaire)       ` (complement  à  1)
+& (et logique)          ! (ou logique)
+* (multiplication)      / (division  entière)
++ (addition)            - (soustraction)
+
+
+H: FiLeNd
+
+Le  label  FiLeNd est ajouté systématiquement à la
+fin de chaque fichier ou module assemblé.
+
+En outre, le label  global  "=FiLeNd"  est  ajouté
+automatiquement   en   fin   de  fichier  lors  de
+l'édition de liens pour l'assemblage séparé.
+
+
+
+III - MODE D'EMPLOI DES PROGRAMMES
+
+
+Les  deux  programmes "aas" et "ald" admettent les
+mêmes options.
+
+-o
+
+Spécifie  le   nom   du   fichier   résultant   de
+l'assemblage ou de l'édition de liens.
+
+-a <fichier>
+
+Demande  l'impression d'un listing d'assemblage ou
+d'édition de liens. Le listing est envoyé dans  le
+fichier spécifié.
+
+-A
+
+Demande  l'impression d'un listing d'assemblage ou
+d'édition de  liens.   Le  listing  est  envoyé  à
+l'affichage (ou stdout sur les systèmes Unix).
+
+-l <longueur de page>
+
+Spécifie la longueur physique des pages, en nombre
+de lignes.  La longueur du texte  sera  inférieure
+de 6 lignes.
+
+-x
+
+Demande  l'impression  d'une  table des références
+croisées.
+
+-p
+
+Active la saisie interactive des options  décrites
+précédemment.    Notons   que   ne   donner  aucun
+paramètre active implicitement cette option.
+
+
+Pour aas,  il  faut  ensuite  fournir  le  nom  du
+fichier source.
+
+Pour  ald,  il  faut  fournir les noms de tous les
+modules.
+
+
+Par défaut, le fichier généré a  pour  nom  "lex".
+Les   fichiers  source  ont  ".as"  comme  suffixe
+(extension), et les fichiers intermédiaires (entre
+l'assembleur  et  l'éditeur  de  liens)  ont ".ao"
+comme  suffixe.   En   général,   il   n'est   pas
+nécessaire d'indiquer ces extensions.
+
+
+
+IV - EXEMPLES
+
+
+Assembler  le  fichier f1.as (qui commence par une
+macro LEX), et fichier assemblé dans "lex" :
+
+aas f1
+
+Assembler   le   fichier   f1.as   avec   listing,
+références  croisées  dans  le  fichier "list", et
+fichier résultat dans "lex" :
+
+aas -xalist f1
+
+aas -x -a list f1
+
+Même exemple que précédemment avec une longueur de
+page de 66 lignes (papier 11") :
+
+aas -xalist -l66 f1
+
+Assembler  le  fichier  f1.as,  avec résultat dans
+"toto", avec paramétrage interactif :
+
+aas
+  puis entrer "f1"
+  puis entrer "toto"
+  puis entrer [RETURN]
+
+
+
+
+Les fichiers f1.as, f2.as et f3.as continennent le
+source d'un fichier lex.
+
+Assemblage des trois fichiers :
+
+aas f1
+
+aas f2
+
+aas f3
+
+Edition de liens des fichiers f1, f2 et f3  (fi.ao
+pour  i=1..3),  avec demande d'un listing et d'une
+table des  références  croisées  dans  le  fichier
+"list", et fichier assemblé nommé "totolex".
+
+ald -xalist -ototolex f1 f2 f3
+
+
+
+        Pierre David (PC37, SIG1, CHHU616)
+    Janick Taillandier (PC246, SIG6, CHHU178)

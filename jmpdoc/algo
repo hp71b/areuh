@@ -1,0 +1,55 @@
+Traitement de la classe des JMP
+
+    passe 1
+	ajouter un nouveau descriptif de JMP
+	memoriser origine
+	memoriser destination
+	memoriser type (JMP, JMPC, BETNC, etc.)
+	si l'instruction precedente etait un test reversible
+	    alors memoriser ce fait
+	fin si
+	si destination # erreur
+	    alors chercher le type de saut de taille minimum
+	    sinon type de saut = taille max
+	fin si
+	memoriser le type de saut trouve
+	renvoyer sa taille
+    passe 2
+	renvoyer la taille du saut, telle que calculee par ps_jmp a la fin pass1
+    passe 3
+	si listing
+	    alors imprimer la ligne courante
+	fin si
+	traiter les instructions correspondant au type calcule par ps_jmp
+
+Procedure ps_jmp, appelee a la fin de la passe 1
+
+    pour tous les descriptifs de JMP faire
+	pour toutes les combinaisons de saut de taille < taille de la passe 1
+	    si |origine - destination| < taille adressable par cette combinaison
+		alors
+		    delta := taille de la passe 1 - taille de cette combinaison
+		    org := origine de ce saut
+		    pour tous les descriptifs de JMP apres celui-ci faire
+			origine -= delta
+			si destination > org
+			    alors destination -= delta
+			fin si
+		    fin pour
+		    pour tous les descriptifs de JMP avant celui-ci faire
+			si destination > org
+			    alors destination -= delta
+			fin si
+		    fin pour
+		    memoriser la combinaison et l'inversion eventuelle du test
+		    sortir de la boucle et passer au descriptif de JMP suivant
+	    fin si
+	fin pour
+    fin pour
+
+regtest, ptrtest, stattest
+
+    si origine du JMP suivant = pc + 2
+	et JMP suivant doit avoir inversion du test
+    alors inverser le test
+    fin si

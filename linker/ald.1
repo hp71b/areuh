@@ -1,0 +1,71 @@
+.TH ALD 1L
+.SH NAME
+ald \- areuh link editor
+.SH SYNOPSIS
+.B ald
+[
+.B -p
+] [
+.B -l
+.I page length
+] [
+.B -A
+] [
+.B -a
+.I listing file
+] [
+.B -x
+] [
+.B -o
+.I object file
+] [ file1 ... filen ]
+.SH DESCRIPTION
+.I Ald
+est le cross-link-editor pour le HP-71, qui prend un ou des
+fichiers intermédiaires, les fusionne et place dans le fichier objet
+un fichier prêt à être transmis au HP-71 (voir
+.IR cp71 (1L)).
+.PP
+Les options sont :
+.TP 17
+.B -p
+Utilisation interactive : demande les noms des fichiers
+au clavier. Option par défaut lorsqu'il n'y a aucun paramètre.
+.TP
+.BI -l " page length"
+La longueur des pages du
+.I listing file
+est fixée à
+.I page length
+lignes (72 par défaut).
+.TP
+.B -A
+Génère un listing d'édition avec table des symboles.
+Le listing est envoyé sur la sortie standard.
+.TP
+.BI -a " listing file"
+Génère un listing d'édition dans le fichier
+.IR "listing file" .
+.TP
+.I -x
+Génère dans le
+.I listing file
+une table des références croisées, indiquant pour chaque
+symbole sa valeur et les offsets dans les fichiers des
+instructions y faisant référence.
+.TP
+.BI -o " object file"
+Place le code objet dans le fichier spécifié
+.RB ( lex
+par défaut)
+.SH AUTHORS
+Pierre David
+Janick Taillandier
+.SH SEE ALSO
+aas(1L),
+adp(1L),
+amg(1L),
+cp71(1L).
+.br
+.I "IDS vol I"
+for HP-71.

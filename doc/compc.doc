@@ -1,0 +1,339 @@
+			COMMUNICATION HP-71 <=> PC
+
+		      Michael Markov (PPC Paris 301)
+
+
+This file documments three HP-71 programs I use to upload and download files to
+and from my HP110. They can also be used to do the same with IBM PC or
+compatible machines equipped with an HP82973 HPIL Interface.
+
+Why do I need special programs to do this, when HPILLINK provides the ability
+to upload and download files from the PC keyboard? Because I only want to
+exchange files with the PC, not use a remote keyboard for my HP-71. The editor
+I have on the PC or the HP110 (Ed Gilbert's Editor, NOT memomaker) is much
+faster than any text editors I have on the HP-71, they handle long text files
+without slowing down to the speed of cold molasses, and have features HP-71
+users only dream of. Editing BASIC programs is usually faster without the delays
+introduced by the remote keyboard. Finally - HPILLINK set-up with the remote
+keyboard does a number of unfriendly things, such as mess-up my STARTUP, my key
+assignments, or even FREEPORT memory I do not want FREEPORTED, if I do not have
+KEYBOARD LEX in my machine.
+
+Still, it is nice to have mass storage and printers at work, by way of HPILLINK
+and the IBM XT in my department. Being able to share data stored in my HP-71
+using the HPILLINK /C option helps keep my bosses happy with my HP-71. Hence,
+the routines below.
+
+NOTE: LINK 1.02 (Southern Software) provides similar capabilities. I hear there
+soon will be a new version called LINK PLUS, with many interesting features.
+I use LINK 1.02 rather than HPILLINK if I want to use the PC as a printer or
+as a video interface for my HP-71. 
+   
+The first program is intended to upload or download a single file at a time,
+from the HP-71 keyboard. Before using this program, you must run the
+HPILLINK.EXE program on the PC, and connect the HP-71 to the PC HP-IL port.
+
+When you download a file, you must provide the full file name, such as:
+JUNK.TEX
+
+When you upload a file, the program will automatically supply the correct file
+extension if you have the FTYPE$ keyword available. See source code below.
+If not, the extension will be left blank, and you will have to RENAME the file
+from the PC keyboard if you want the correct extension.
+
+The file transfer takes little or no time. Once done, disconnect the HP-71,
+exit HPILLINK with the F8 key, and do whatever you desire with either the PC or
+the HP-71. Enjoy! 
+
+
+0010 ! PC71EX - Transfer HP71 files between a PC and an HP71 with HPILLINK
+0020 ! Copyright Michael Markov 1988
+0030 ! 
+0040 ! Uses FTYPE$ keyword from DATACOM ROM - See FLTYPELXS for source
+0050 ! This is required if you want to provide the proper file extension
+0060 ! when uploading files to an IBM PC via HPILLINK /HP82973 Interface card
+0070 ! or to an HP110 running HPILLINK.
+0080 ! 
+0090 ! If you do not have the FTYPE$ keyword, comment-out the line 300 :
+0100 ! 300 T$=FTYPE$(F$)
+0110 ! 
+0120 ! The advantage of this program is that it allows file transfers without
+0130 ! messing-up your favorite STARTUP, your key assignments, or FREEPORTing
+0140 ! stuff you may not want free-ported. This was developed when I started
+0150 ! to make heavy use of my HP110 to edit HP71 source code files, which I
+0160 ! then assembled using the AREUH (PPC-Paris) assembler-linker before 
+0170 ! downloading the resulting LEX for testing in the HP71. I had no need for
+0180 ! an external keyboard since the EDITOR I use on my HP110 is considerably
+0190 ! faster than EDTEXT, and provides more flexibility.
+0200 ! 
+0210 LOCAL @ DISP 'Up or Download?(U/D)'
+0220 A$=UPRC$(KEYWAIT$) @ IF A$='D' THEN 240
+0230 IF A$='U' THEN 280 ELSE 210
+0240 LOCAL @ INPUT 'DOWNLOAD FILE? ';F$ @ IF F$='' THEN END 
+0250 P=DEVADDR(':PC')
+0260 SEND UNT TALK P DDT 0 UNT MTA LISTEN P DATA F$ EOL 
+0270 COPY :P @ GOTO 240
+0280 INPUT 'Upload file? ';F$ @ IF F$='' THEN END 
+0290 P=DEVADDR(':PC') @ T$=''
+0300 T$=FTYPE$(F$)[1,3] ! comment out if FTYPES keyword not available
+0310 SEND UNL LISTEN P MTA DDL 0 DATA F$,'.',T$,10 
+0320 COPY F$ TO :P @ GOTO 280
+
+The second program is a minor variant of the PC71EX program given above. It
+allows you to upload or download ROM images just as if the PC was an HPIL disk
+drive. There is one interesting difference: the file stored on the DOS disk will
+take less space than on HPIL mass storage. Apparently, HPILLINK and ROMCOPY
+version RCPY:E were designed to work together better than the mass storage
+option! Here, we see the advantages of an intelligent mass storage device.
+
+0010 ! PCROM - Transfer HP71 ROM images between a PC and an HP71 with HPILLINK
+0011 ! and ROMCOPY LEX.
+0020 ! Copyright Michael Markov 1988
+0030 ! 
+0040 ! This program is a slightly modified version of PC71EX, elsewhere on this
+0041 ! swapdisk. See PCCOMM for documentation.
+0042 ! 
+0210 LOCAL @ DISP 'Up or Download?(U/D)'
+0220 A$=UPRC$(KEYWAIT$) @ IF A$='D' THEN 240
+0230 IF A$='U' THEN 280 ELSE 210
+0240 LOCAL @ INPUT 'DOWNLOAD FILE? ';F$ @ IF F$='' THEN END 
+0241 INPUT 'To :PORT(#)? ','5';N
+0250 P=DEVADDR(':PC') @ IF NOT POS(F$,'.ROM') THEN F$=F$&'.ROM'
+0260 SEND UNT TALK P DDT 0 UNT MTA LISTEN P DATA F$ EOL 
+0261 X=POS(UPRC$(F$),'.ROM') @ F$=F$[1,X-1]&':'&STR$(P)
+0270 ROMCOPY F$ TO ':PORT('&STR$(N)&')' @ GOTO 240
+0280 INPUT 'Upload file? ';F$ @ IF F$='' THEN END 
+0281 INPUT 'From :PORT(#)? ','5';N
+0290 P=DEVADDR(':PC') @ X=POS(UPRC$(F$),'.ROM') @ IF X THEN F$=F$[1,X-1]
+0310 SEND UNL LISTEN P MTA DDL 0 DATA F$,'.ROM',10 
+0320 ROMCOPY ':PORT('&STR$(N)&')' TO :P @ GOTO 280
+
+The last program allows you to upload many files to the PC, under the control
+of an HP-71 program. I have used it to transfer entire swapdisks to my HP110,
+for friends that have HP-71 machines and PC's, but not HP9114 drives. They then
+read the disks as best they can. I understand that there is a new package from
+Personalized Software called READHP, that allows IBM machines to read 3.5" disks
+formatted by HP machines.
+
+It should be possible to download files from the PC with a PCTODISK program,
+just as easily as you can upload entire disks. The easiest approach would be
+to start things going by creating a TEXT file with all the desired filenames
+and extensions with the DIR A: >DIR.TEX. Then use PC71EX to download the file,
+and let your HP-71 control the download to an HPIL mass storage device. I have
+not needed to do this, since I am not (as of this date) getting any
+contributions on DOS disks. However, if HP abandons HPIL, this may be the only
+way to have peripherals for our HP41/HP75/HP71 computers, may they last many
+years. (Have you purchased a spare HP-71 yet? NO? Why?).
+
+NOTE: PCTODISK does not yet exist, except as an idea. It is one of my many
+'to do sometime' projects.
+
+Anyways, easy PC<==>HP71 communications will greatly ease the transition to the
+world of DOS/OS2 machines, where instead of HP BASIC you will be forced to learn
+PASCAL, C, MEGA BASIC or QUICK BASIC if you want to do any serious programming.
+   
+Obvioulsy, the PC must be running HPILLINK, and the default drive to which 
+HPILLINK writes the files should be as empty as possible. Load HPILLINK with
+A:HPILLINK, then replace the disk in the default drive (usually A:) with a
+newly formated disk. On the HP71, run DISKTOPC. When the program stops, replace
+the disk in the default drive, and run DISKTOPC on the HP71 to continue the
+upload.
+
+NOTE: Do NOT purge the temporary directory file (default DIRFL), except at the
+start of the upload, before the first file is transfered. This allows the PDIR
+keyword (JPCROM) to create a new file that contains all the information you need
+to upload the disk. The HP-71 automatically deletes file entries as the upload
+goes on. Any time the DISKTOPC program stops, you can LIST DIRFL to find out
+how many files still ave to be uploaded.
+
+Note that the program polls the PC to determine whether the remote load failed
+for any reason, such as no space remaining available on the PC. This program is
+intended to be used in conjunction with a video interface on the HPIL loop.
+
+The program uses JPCROM to create a directory listing of the disk to be
+uploaded to the PC. This is by far the most convenient way. Among other things,
+JPCROM implements a poll handler that allows your HP-71 to identify HP-41,
+HP-75 and other non-HP71-standard file types. This allows you to tag the file
+names to help identify the contents of the file. HPILLINK does not recognize
+HP-41 or HP-75 file types. In fact, it does not recognize all HP-71 file types,
+atleast, not the version I have (Maybe revision E does better, but I do not have
+that yet. 
+
+It should be obvious that minor changes to line 240 allow uploading only HP-71
+files, or only HP41 files, etc, should you so desire.
+
+0010 ! DISKTOPC - UPLOAD FILES TO PC WITH HPILLINK
+0020 ! This program is available, at least in concept, in the HPILLINK
+0030 ! documentation. It implements the task in a way that helps minimizes
+0040 ! user intervention. It was written to facilitate uploading Swapdisks
+0050 ! to an IBM PC equipped with an HPIL interface card.
+0060 ! 
+0070 ! Since the HP71 is the controller, you can have a disk drive on the loop,
+0080 ! and copy each file from the drive to the IBM PC, using a minimum of
+0090 ! HP-71 memory.
+0100 ! JPCROM REQUIRED. IF NOT AVAILABLE, CREATE DISK DIRECTORY LISTING WITH
+0110 ! SOME BASIC ROUTINE SUCH AS DIR71
+0120 CONTROL ON @ RESET HPIL @ RESTORE IO @ DISPLAY IS :DISPLAY
+0130 INPUT "Which drive? ";D
+0140 P=DEVADDR('%16('&STR$(D)&')')
+0150 INPUT 'temp. file? ','DIRFL';F$
+0155 ON ERROR GOTO 161
+0160 PDIR :P TO F$ @ GOTO 169
+0161 OFF ERROR @ DISP ERRM$;'Purge? (Y/N)'
+0162 A$=UPRC$(KEYWAIT$) @ IF A$='Y' THEN PURGE F$ @ GOTO 155
+0169 OFF ERROR @ ASSIGN #1 TO F$ @ RESTORE #1
+0180 DIM A$[60] @ D=DEVADDR(':PC') @ STANDBY ON @ REMOTE 
+0190 FOR I=0 TO FILESZR(F$)-1 @ READ #1;A$ @ DISP I;A$
+0200 IF SPOLL(D)#5 THEN 270
+0210 F$=TRIM$(A$[1,10])
+0220 T$=TRIM$(A$[14,19])[1,3]
+0230 IF T$='41:' OR T$='75:' THEN G$=F$&T$[1,2] @ T$='UNK' ELSE G$=F$
+0240 SEND UNL LISTEN D MTA DDL 0 DATA G$,'.',T$,10 
+0250 COPY F$&':'&STR$(P) TO :D
+0260 NEXT I
+0270 LOCAL @ DISP 'HP110 Drive A full-delete last file copied'
+0280 READ #1,I-2;A$ @ DISP 'last file copied: ';I-2;A$
+0281 FOR J=I-2 TO 0 STEP -1 @ DELETE #1,J @ NEXT J
+0290 STANDBY OFF @ CONTROL OFF @ END 
+
+       LEX    'FTYPELEX'  LEX file name
+       TITLE  FTYPELEX, File type LEX,  Samuel H Chau [242]
+*
+       ID     #F6         compatible with DCLEX in DATACOMM ROM
+       MSG    0           no message table
+       POLL   0           no poll handler
+*
+       ENTRY  FTYPE
+       CHAR   #F          string function
+*
+       KEY    'FTYPE$'    Syntax: FTYPE$('file specifier') or
+*                                 FTYPE$(assign channel #)
+*                         Returns file type as a 5-char string
+*                         Null string returned if file not found
+*                         Example:  FTYPE$('FORTHRAM') returns FORTH
+       TOKEN  1
+       ENDTXT             end of text table
+************************
+*      **** EQUate Table ****
+*
+AVE=D1 EQU #18BB8 update AVMEME from D1 or C
+BSERR  EQU #0939A BASIC system error
+D0=AVS EQU #09B2C set D0 to address in AVMEMS
+D1MSTK EQU #1954E set D1 at MTMSTK (AVMEME)
+FDCH#  EQU #114AC find channel # in assign table
+FFIB#  EQU #122EF find file number in FIB
+FILXQ$ EQU #09B95 filename execute for a string expression
+FINDF  EQU #09F77 find a file
+FLTDH  EQU #1B223 convert 12-digit flt to HEX integer
+FNRTN  EQU #0F23C function return
+FTYPDC EQU #06902 file type decompile
+FUNCR0 EQU #2F89B function scratch RAM start
+POLL   EQU #12337 poll LEX files with process #
+POPMTH EQU #1B3DB skip past item on MATH stack
+RSTK<R EQU #014A8 restore RSTK level(s) from RSTKBF buffer
+R<RSTK EQU #014DD save RSTK level(s) into RSTKBF buffer
+STRHED EQU #14C2E generate string head on stack
+pFINDF EQU #00017 poll to find a file
+pFSPCx EQU #00005 poll to execute file specifier
+eFSPEC EQU #0003A invalid filespec error
+*
+************************
+*
+       NIBHEX C11    one string or numeric parameter
+FTYPE  CD0EX
+       RSTK=C        save D0 (PC) on return stack
+       GOSBVL R<RSTK save RSTK level(s)  [P=0]
+       A=DAT1 W      get top of MATH stack in A
+       LCHEX  A      load C:0 for parameter type check
+       ?C>A   P      integer parameter?
+       GOYES  FTYP03 yes: interpret as channel #
+       A=A+1  P
+       ?A#0   B      not string parameter?
+       GOYES  FTYP01 yes: parameter is invalid
+       GOTO   FTYP09 no: interpret string as file specifier
+FTYP01 LC(4)  eFSPEC load Invalid filespec error
+FTYP02 GOVLNG BSERR  BASIC error exit
+FTYP03 D1=D1+ 16     pop integer argument off MATH stack
+       GOSUB  ave=d1 update stack top pointer
+       GOSBVL FLTDH  convert 12 form channel # to HEX integer
+       B=A    B      put HEX form in B for FDCH#
+       GOSBVL FDCH#  find channel # in assign table
+       GONC   FTYP08 not found: ready for exit
+       ?A=0   B      channel closed? no: A(B)=FIB#
+       GOYES  FTYP08 yes: punt!
+       GOSBVL FFIB#  find file # in FIB
+       GOC    FTYP08 not found? yes: punt! no: D1 @ file # in FIB
+       D1=D1+ 5      advance to file type entry in FIB
+FTYP04 GOSBVL D0=AVS set D0 to AVMEMS
+       C=0    W      preclear C
+       DAT0=C W      blank out word at AVMEMS
+       D0=D0+ 2      point past one null
+       GOSBVL FTYPDC get file type (5 chars), D0 points past it
+       GOSUB  d1mstk set D1 to AVMEME
+       GOSBVL D0=AVS set D0 to AVMEMS
+       C=DAT0 W      get file type in C
+       ?C=0   B      not at file type string?
+       GOYES  FTYP06 yes: move pointer down
+FTYP05 ?C=0   B      end of file type string?
+       GOYES  FTYP07 yes: ready for string return
+       D1=D1- 2      point D1 down 1 char
+       DAT1=C B      push one ASCII char onto stack
+FTYP06 CSR    W
+       CSR    W      shift to next char in file type string
+       GOTO   FTYP05 continue building string on stack
+FTYP07 GOSBVL STRHED generate string header on stack
+       GOSBVL RSTK<R restore RSTK level(s)
+       C=RSTK
+       CD0EX         restore D0 (PC) from RSTK
+       GOVLNG FNRTN  function return
+FTYP08 GOSUB  d1mstk set D1 to AVMEME
+       GOTO   FTYP07 return with string
+FTYP09 GOSUB  ave=d1 update stack top pointer
+       C=DAT1 W      read string header into C
+       CSR    W
+       CSR    W      shift to string length field
+       ?C=0   A      null string?
+       GOYES  FTYP08 yes: ready for return
+       GOSBVL FILXQ$ execute tokenized file specifier
+       P=     0
+       LCASC  '  '   load C with 2 ASCII spaces
+       R0=C          save in R0
+       GOC    FTYP16 file specifier is mainframe recognizable
+       GOSBVL POLL   illegal: issue file spec execution poll
+       CON(2) pFSPCx file specifier execute poll
+       GOC    FTYP13 error return from poll: error exit
+       ?XM=0         pFSPCx poll handled? 
+       GOYES  FTYP10 yes: continue
+       GOTO   FTYP01 no: Invalid filespec error
+FTYP10 C=R0          last 2 chars of filename into C
+       R1=C          save in R1
+       R0=A          filename (blank filled) into R0
+       GOSUB  d1mstk set D1 to stack top
+       GOSBVL POPMTH skip past current item on stack
+       GOSUB  ave=d1 update stack top pointer
+       GOSBVL POLL   issue poll to find file
+       CON(2) pFINDF file finder poll
+       GONC   FTYP11 no error: continue
+       A=C    A      save C in A
+       LCHEX  16     load C with HPIL File not found error #
+       ?A=C   B      file not found on HPIL mass storage?
+       GOYES  FTYP12 yes: ready for return
+       C=A    A      restore C from A
+       GONC   FTYP13 B.E.T.
+FTYP11 ?XM=0         pFINDF poll handled?
+       GOYES  FTYP14 yes: continue
+FTYP12 GOTO   FTYP08 no: ready for return
+FTYP13 GOTO   FTYP02 load BASIC error returned from LEX file
+FTYP14 D1=(5) FUNCR0 set D1 to function scratch RAM
+       C=R0
+       DAT1=C W      put file attributes into function scratch RAM
+       D1=D1+ 11     advance to file type field
+FTYP15 GOTO   FTYP04 go find file type
+FTYP16 GOSUB  ave=d1 update stack top pointer
+       GOSBVL FINDF  find the file
+       GOC    FTYP12 not found: ready for return
+       D1=D1+ 16     move to file type field in file header
+       GONC   FTYP15 B.E.T.
+ave=d1 GOVLNG AVE=D1
+d1mstk GOVLNG D1MSTK
+       END

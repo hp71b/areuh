@@ -1,0 +1,501 @@
+			  HP-71 DEVELOPMENT SYSTEM
+
+
+
+
+
+NOT FOR COMMERCIAL DISTRIBUTION - NOT FOR COMMERCIAL DISTRIBUTION - NOT FOR
+MMERCIAL DISTRIBUTION - NOT FOR COMMERCIAL DISTRIBUTION - NOT FOR COMMERCIA
+ISTRIBUTION - NOT FOR COMMERCIAL DISTRIBUTION - NOT FOR COMMERCIAL DISTRIBU
+
+
+
+
+Notice :  this is a public  domain  software.  You are	encouraged  to make
+copies of it.  Feel free to distribute it.  The only restriction is that it
+cannot be distributed on a commercial basis.
+
+
+
+
+INTRODUCTION
+------------
+
+
+This disk contains the AREUH development system.  It is intended to produce
+LEX or BIN files for the HP-71B, using a PC or	compatible  computer.  This
+system	includes an  assembler, a linker, a message  table  generator,	and
+miscellaneous useful tools.
+
+It is a sophisticated  set of programs.  They have been optimized for speed
+without compromising capabilities.  The assembler is able to process source
+files  either  compatible  with  Forth /  Assembler  Rom or HP	development
+system.  It should be able to  understand  all	source	file  formats.	The
+linker is a  convenient  tool to develop  large  projects  as well as small
+ones.  The table message  generator (like other tools) is very easy to use,
+and greatly simplify the creation of such tables.
+
+It was written by Pierre David and Janick  Taillandier, from PPC-Paris.  We
+are happy to thank Stephane  Barizien for its efficient help for all MS-DOS
+problems.
+
+As described above, you are welcome to copy and distribute it free. We hope
+it will help HP-71 software development. It is our common interest.
+
+It was used by the authors to develop :
+
+- JPCROM (19+ KB Lex file, 461 KB source files, assembled in 2.20 minutes)
+  JPCROM is the PPC-Paris LEX file, including 100 various keywords.
+
+- GRAPHIC (9 KB Lex file, 290 KB source files, assembled in 1.15 minutes)
+  GRAPHIC is a commercial product, providing graphic  capabilities  similar
+  to HP-85,  HP-41,  HP-200  graphic  languages on a ThinkJet  (MOVE, DRAW,
+  LABEL...).
+
+
+I - HISTORY
+-----------
+
+
+The AREUH  development	system (AREUH stands for  Assembleur  Relogeable En
+Utilisation  Heuristique) was developed from April to August 1986 on a UNIX
+machine :  the HP Integral Personal  Computer.	Unfortunately,	many people
+are now using PC or compatible.  So, in July 1987, we have decided to adapt
+AREUH to these so called computers.
+
+The process was rather hard for us :  we had to find a PC, a C compiler, an
+HPIL card, etc.  We also had a lot of  difficulties  with the  surprising C
+compiler  implementation,  as well as with the numerous but powerless  text
+editors...
+
+We have no personal interest in this MS-DOS version.  It was a tough job to
+get it work, and we get no profit from it.
+
+This was done to allow all HP-71  developers  to benefit  from our tool and
+stop using  archaic ones, and we hope to see more HP-71  software.  We wish
+this could help.
+
+We hope the time we have spent on this	project will not be a wasted  time.
+We would appreciate receiving feed-back from you.  It would also be nice to
+mention that your software has been developed with this assembler.
+
+
+II - WHY A LINKER ?
+-------------------
+
+
+If you take a look at the IDS Vol.  III, or HPIL IDS, you may  notice  that
+HP used a linker.  Other  large  projects,  such as JPCROM or GRAPHIC  have
+been using a linker.
+
+Using a linker	allows	splitting a large  problem  into small,  manageable
+units :  you have only small  files to edit and  assemble.  You divide your
+problem  into  functional  units,  with clear  interfaces.  You work on one
+module at a time, you don't have to take care of the others.
+
+Incidentally,  you spare time because you have only one module to assemble,
+and you have small convenient  facilities,  such as local labels known only
+inside the module, and global ones known everywhere.
+
+
+III - PRINCIPLE
+---------------
+
+
+A : THE TWO MODES
+-----------------
+
+The assembler has two operating modes :
+
+- compatibility mode
+- modular mode
+
+The first one is  intended to assemble	all source  files  written  for the
+Assembler  Rom.  All  macro-operations	such  as  LEX,	BIN,  CHAIN...	are
+supported.  No linkage step is needed.
+
+The second one is similar to the description  given in IDS Vol.  I, chapter
+16.  In  fact, it has more  features  than  this  one.	This  mode  needs a
+linkage  step, and  supports  local and global	labels.  A global  label is
+preceded by an "=" character.
+
+To use the compatibility  mode, the first line of the file must be a LEX or
+BIN macro-operation.  Any other first line activates modular mode.
+
+If you wish to use system entry points in  compatibility  mode, you can use
+the RDSYMB  macro-operation.  It will read the	specified  file to load all
+supported entry points.  You don't need any more to write long lists of EQU
+to use system entry points.
+
+In  modular  mode,   everything  is  automatic.  The  system  entry  points
+addresses are loaded at link time.
+
+In both  modes, you cannot use FORTH, WORD and WORDI  macro-operations.  In
+modular  mode, you cannot use LEX, ID, MSG, POLL, ENTRY, CHAR,	TOKEN, KEY,
+ENDTXT, BIN and CHAIN.
+
+
+B : LISTINGS
+------------
+
+You can  output  assembler  or	linker	listings,  with  optional  complete
+cross-reference  section.  For an  example,  see  FINPUT  listing  in JPC43
+(April 1987).
+
+
+C : ADDED FEATURES
+------------------
+
+Compared with the Assembler  Rom, or HP's one, the following  features have
+been added :
+
+- label  names	may have up to 12  significant	characters  (13 if they are
+preceded by an "=" symbol).
+
+- all  opcodes and  modifiers  are not case  sensitive.  You can mix freely
+lower and upper case characters.  Label names are always case sensitive.
+
+- conditional assembly is allowed, with macro-operation IF. The syntax is :
+       IF     <expression>
+	<assembled if expression # 0>
+       ELSE
+	<assembled if expression = 0>
+       ENDIF
+
+The ELSE part is optional.
+
+- the  macro-operation	RDSYMB (ReaD SYMBol) was implemented to load a file
+containing entry points.  The syntax is :
+       RDSYMB <filename>
+In this MS-DOS version,  <filename> can be an absolute file reference (such
+as  a:\lib\hp71.ep),  or a  relative  one.  In the last  case,	the file is
+looked for in specific locations.
+
+- D0=HEX and D1=HEX,  undocumented  and bugged opcodes in the Assembler Rom
+are present and unbugged !
+
+- numerical values are processed on 6 hexadecimal  digits  (nibbles), as in
+HP's assembler.  This allows providing LC(6) and CON(6) instructions.
+
+-  litteral  constants	may  be  delimited  either  by '  (quote)  or  by \
+(backslash) symbols.
+
+- there is no limit on parenthesis level.
+
+- a new constant type is supported :  binary constants.  They are used with
+a % symbol :  for example :  %01110001 = #71 = 113.
+
+- new operators have been added. They are
+   ~   -> *256+
+   ^   -> power
+   `   -> one's complement
+All operators are listed below, in descending order or precedence.
+   ~   (*256+)			     ^	 (power)
+   -   (unary minus)		     `	 (one's complement)
+   &   (logical and)		     !	 (logical or)
+   *   (multiplication) 	     /	 (integer division)
+   +   (addition)		     -	 (binary subtraction)
+
+- FiLeNd label is automatically  added at the end of each assembled file or
+module.  In modular  mode, a global label  =FiLeNd is  automatically  added
+after the last module during link step.
+
+
+IV - USING THE PROGRAMS
+-----------------------
+
+
+A : File naming conventions :
+-----------------------------
+
+- source files have the ".as" (Areuh Source) extension,
+- object file resulting from assembly in modular mode have the ".ao" (Areuh
+  Object) extension,
+- list files have the ".al" (Areuh List) extension,
+- message description files have the ".am" (Areuh Message) extension,
+- entry points files have the ".ep" (Entry Point) extension,
+- complete lex files (result of aas in compatibility mode or ald) are named
+  "lex".
+
+These  are  suggested  names.  You can	override  them	using  full  names.
+However, using them is easier.
+
+
+B : Assembler (aas) and Linker (ald)
+------------------------------------
+
+Both programs share the same options.
+
+-o <file>
+specifies  the name of output file.  If the specified  name is a directory,
+the output file is written in this directory, using default name.
+
+-a <file>
+produces  a listing  in the  specified	file.  If the  specified  name is a
+directory,  the listing file is written in this  directory,  using  default
+name.
+
+-A
+produces a listing on standard output.
+
+-l <page length>
+specifies  the physical page length in number of lines	(default is 72, for
+12" paper).  Text length is (page length - 6).
+
+-x
+asks  for a  cross-reference  table.  Should  be used  only  when  -a or -A
+options are specified.
+
+-p
+enables  interactive options input.  If no option or file name is specified
+after aas or ald, you automatically enter interactive prompt mode.
+
+After aas, you have to supply the source  file names (wild card  characters
+allowed).  File names order is irrelevant.
+
+After  ald, you have to supply	the  intermediate  file  names	(wild  card
+characters allowed).  File names order is very important, it corresponds to
+the link order.
+
+
+The  linker is	limited  to 80 files.  As far as MS-DOS  command  lines are
+limited to a small  numbers of	characters,  you may have  difficulties  to
+specify  a full  ald  command.	In  this  case,  you  can  use	interactive
+prompting :
+  ald  <answer
+where "answer" is a text file containing the answers to all questions.
+
+
+C : Message table generator (amg)
+---------------------------------
+
+Amg reads on  standard	input a message  table	description,  and writes on
+standard output an HP-71 message table, ready to be assembled.
+
+The message table  description	contains  several lines with the  following
+structure :
+
+<message label>:<message text>
+
+For example :
+=eDIRFL:Directory Full
+
+If you	want to use  building  blocks,	the  building  block  text  must be
+enclosed within square brackets, for example :
+=eUNEXP:Unexpected [Message ]
+[Message ] (with a  white  space)  is a local  building  block.  It will be
+created in the message table.
+
+Amg recognizes automatically mainframe building blocks. For example :
+=eBADMD:[Invalid ]Mode
+[Invalid ] (with a white space) is a mainframe building block.	The message
+table will reference it without creating it.
+
+Messages  are  numbered  from 0.  If an  argument  is  given,  it must be a
+number, and messages will be numbered from it.
+
+Amg checks  that there is a message  whose total  length is multiple  of 16
+nibbles, as requested by the HP-71  Operating  System.	Otherwise, an error
+is written in the generated file.
+
+
+D : Downloading to HP-71 :
+--------------------------
+
+Two  utilities are provided to download the  assembled	files to the HP-71.
+You can use either the RS232 interface or the HP82973 HPIL interface.
+
+
+RS232 : (program a2rs)
+----------------------
+
+The syntax is : a2rs [ <file> ]
+If no file name is specified, the default is "lex".
+
+For the connection, we have used the following cable :
+
+       PC	       HP82164A RS232/HPIL
+
+	2 ----\ /----  2
+	       x
+	3 ----/ \----  3
+
+	4 ----\ /----  4
+	       x
+	5 ----/ \----  5
+
+	6 ----\ /----  6
+	       x
+       20 ----/ \---- 20
+
+	7 -----------  7
+
+
+The HP82164A must be configured from the HP-71 by :
+  REMOTE @ OUTPUT :RS232;"LI5;C0" @ LOCAL
+before running a2rs, you have to enter on your HP-71 :
+  COPY :RS232
+
+
+HPIL : (program a2lex)
+----------------------
+
+Prior to transfer  your  assembled  file, you must use a2lex to convert the
+file to the format needed by HPILLINK.
+
+The syntax is : a2lex [ <file> ]
+If no file name is specified,  the default is "lex".  The ".lex"  extension
+is automatically appended to the converted file.
+
+Then, you can download using HPILLINK.
+
+
+CUSTOMIZING YOUR DOWNLOADING PROGRAM : (program a2?)
+----------------------------------------------------
+
+The syntax will be : a2? [ <file> ]
+If no file name is specified, the default is "lex".
+
+In order to allow you to use any device you may wish to download  your LEX,
+we give you the source code for a2lex (file a2lex.c) as an example.
+
+You have to write only three functions in C :
+  init () :
+    initializes your interface
+  output (char c) :
+    outputs the character c to your interface
+  term () :
+    terminates the process.
+
+These functions can be empty.  They are only responsible for the interface,
+and not for the conversion process.
+
+
+V - EXAMPLES
+------------
+
+
+To assemble "compat.as" (compatibility mode), you must type :
+  aas compat
+The output will be in "lex" file.
+
+
+To assemble  "compat.as" with listing and cross-reference  section, sent to
+file "list", type :
+  aas -xalist -l66 compat	 or
+  aas -x -a list -l 66 compat.as
+
+
+To assemble the same file with interactive options input, simply type :
+  aas
+    then enter "compat"
+    then press [RETURN] 	 (output is default, "lex")
+    then enter "list"            (for listing file)
+    then enter "yes"             (for cross reference)
+    then enter "66"              (for page length)
+
+
+To assemble files "x1.as", "x2.as", "x3.as" (modular mode), you must type :
+  aas x*.as			 or
+  aas x1 x2 x3
+
+To link these files, with a listing and cross-reference in file "list", and
+a lex file in "totolex", you must type :
+  ald -xalist -ototolex x1 x2 x3
+Warning : the order of object modules if important.
+
+
+To create a message table from "jpc.am", you must type :
+  amg <jpc.am >mes.as
+
+If you wish to number these messages starting from 27, you must type :
+  amg 27 <jpc.am >mes.as
+
+
+VI - ENTRY POINTS FILES
+-----------------------
+
+
+AREUH is provided with two files :
+
+  hp71.ep :	   mainframe supported entry points and symbols
+  hpil.ep :	   hpil supported entry points
+
+These files are looked for in the following directories :
+  current directory
+  c:\hp71\
+  c:\lib\hp71\
+  c:\lib\
+  c:\areuh\lib\
+or at the location specifed by RDSYMB.
+
+You can add entry  points to these files, or use other files.  Only hp71.ep
+is  automatically  loaded at link time.  If you want to use hpil.ep or your
+own file, you must load them explicitly at assembly time with RDSYMB.
+
+The  supplied  files are  sorted in reverse  order.  This is only for speed
+considerations.  Each label has its name, followed by its hexadecimal value
+on the next line.
+
+If you find any error in these files, please inform us.
+
+
+VII - IN CASE OF PROBLEMS
+-------------------------
+
+If you have a  problem,  before  reporting  it to us,  please  check if the
+problem is not in your source code or computer system.
+
+We will try to answer your  questions or solve your  problems (NOT hardware
+or  connection	problems).  Send us on a 3.5" LIF (or MS-DOS)  format  your
+source code, with a complete  description and localization of your problem.
+This is not a programming aid service...
+
+Write to :
+  Pierre David		 or	    Janick Taillandier
+  33 Bd St Martin		    335 rue Lecourbe
+  75003 Paris			    75015 Paris
+  FRANCE			    FRANCE
+
+
+APPENDIX 1 : DISTRIBUTION DISK
+------------------------------
+
+
+This disks contains the following files :
+
+aas.exe 	Areuh ASsembler
+ald.exe 	Areuh LoaDer (Loader = Linker under UNIX)
+amg.exe 	Areuh Message table Generator
+a2lex.exe	Areuh To HPILLINK LEX format
+a2rs.exe	Areuh To RS232
+adp.exe 	Areuh DumP (utility to dump intermediate files)
+
+readme		This file
+
+xmp\compat.as	Example for compatibility mode
+xmp\x1.as	Example for modular mode (file header)
+xmp\x2.as	Example for modular mode (execution routine)
+xmp\x3.as	Example for modular mode (decomparse routines)
+xmp\jpc.am	Example of message table description (from JPCROM)
+
+src\copy.h	body of a2lex program
+src\a2lex.c	dedicated I/O routines
+
+lib\hp71.ep	HP-71 supported entry points and symbols
+lib\hpil.ep	HP-IL supported entry points
+
+
+APPENDIX 2 : MS-DOS NOTE
+------------------------
+
+These programs have been successfully  tested on an HP 150, MS-DOS 2.11 and
+on an AT compatible MS-DOS 3.20.
+
+We have used Microsoft C 4.0 to compile all programs.
+
+
+
+Enjoy !
+
+Pierre David & Janick Taillandier
