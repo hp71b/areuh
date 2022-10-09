@@ -10,7 +10,18 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
+
+int bcd (), hex () ;
+int read_lif () ;
+void read_file_infos () ;
+void write_data () ;
+void write_dir () ;
+void search_dir () ;
+void read_date () ;
+void update () ;
 
 typedef unsigned short uint16 ;
 typedef unsigned long uint32 ;
@@ -53,9 +64,7 @@ long int a = 0, b = 0, eod = 0 ;
 
 #define DISK "/dev/dsk/floppy"
 
-main (argc, argv)
-int argc ;
-char *argv[] ;
+int main (int argc, char *argv[])
 {
     long int magic ;
 
@@ -113,8 +122,7 @@ char *argv[] ;
     exit (0) ;
 }
 
-skip (n)
-int n ;
+void skip (int n)
 {
     char c ;
     int i ;
@@ -122,9 +130,7 @@ int n ;
     for (i=1; i<=n; i++) fread (&c, 1, 1, fp) ;
 }
 
-con (pvar, n)
-unsigned int *pvar ;
-int n ;
+void con (unsigned int *pvar, int n)
 {
     int i ;
     unsigned char areuh [256] ;
@@ -137,11 +143,11 @@ int n ;
     }
 }
 
-read_file_infos ()
+void read_file_infos ()
 {
     int i ;
     unsigned int c ;
-    int length, length_sect ;
+    unsigned int length, length_sect ;
 
     for (i=0; i<8; i++)
     {
@@ -171,10 +177,8 @@ read_file_infos ()
     dir_entry.l_flagwd = (unsigned short int) 0x8001 ;
 }
 
-read_date (str)
-char *str ;
+void read_date (char *str)
 {
-    int i ;
     long clock ;
     struct tm *ptm ;
 
@@ -188,8 +192,7 @@ char *str ;
     str [5] = '\0' ;
 }
 
-int bcd (n)
-int n ;
+int bcd (int n)
 {
     return (((n / 10) * 16) + (n % 10)) ;
 }
@@ -201,7 +204,7 @@ int read_lif ()
     return (1) ;
 }
 
-search_dir()
+void search_dir()
 {
     struct lif_filent cur_dir_entry ;
     long int compteur = 1, sod, sodn, limite ;
@@ -258,7 +261,7 @@ search_dir()
     dir_entry.l_startsec = sodn ;
 }
 
-write_data ()
+void write_data ()
 {
     int c = 0, d ;
 
@@ -275,13 +278,12 @@ write_data ()
     if (c) fputc (hex(c), fpw) ;
 }
 
-int hex (c)
-int c ;
+int hex (int c)
 {
     return (((c>='A')&&(c<='F'))?c-'A'+10:c-'0') ;
 }
 
-write_dir ()
+void write_dir ()
 {
     long int *plong, i ;
 
@@ -303,13 +305,11 @@ write_dir ()
     }
 }
 
-update (x, pdir)
-long int x ;
-struct lif_filent *pdir ;
+void update (long int x, struct lif_filent *pdir)
 {
+/*
     struct lif_filent sector[8] ;
 
-/*
 fclose(fpw) ; fpw = fopen (DISK, "w") ;
 fclose(fplif) ; fplif = fopen (DISK, "r") ;
     fseek (fplif, x, 0) ;

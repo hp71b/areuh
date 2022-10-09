@@ -24,10 +24,10 @@ ps_label, find_label, add_label, label_value, s_init
 
 
 extern saddr calc_expression() ;
-extern uchar *memoire() ;
+extern char *memoire() ;
 
-struct symbol *find_label(), *add_label() ;
-
+struct symbol *find_label (char *label) ;
+struct symbol *add_label (char *label, saddr val, char *exp, char type, char os) ;
 
 /******************************************************************************
 
@@ -35,7 +35,7 @@ struct symbol *find_label(), *add_label() ;
 
 
 synopsis : void ps_label (label, mnemo, modif)
-           uchar *label, *mnemo, *modif
+           char *label, *mnemo, *modif
 description : "pass" function call "ps_label" when a label is encoutered.
               Thus, in function of pass number, we must process the label.
 
@@ -48,18 +48,17 @@ description : "pass" function call "ps_label" when a label is encoutered.
 
 ******************************************************************************/
 
-void ps_label (label, mnemo, modif)
-uchar *label, *mnemo, *modif;
+void ps_label (char *label, char *mnemo, char *modif)
 {
     struct symbol *ad;
     saddr val ;
 
-/* la ligne ci-dessous teste si la partie "utile" du label est "FiLeNd" */
+    /* la ligne ci-dessous teste si la partie "utile" du label est "FiLeNd" */
     if (strcmp(label + (*label=='='), "FiLeNd")==0) error (ERRFLN, "") ;
 
     ad = find_label (label) ;
-        /* during pass two, label must be found. Otherwise, 
-           the assembler is bug-full !!!                         */
+    /* during pass two, label must be found. Otherwise, 
+       the assembler is bug-full !!!                         */
     if (strcmp (mnemo, "EQU"))
     {                                  /* implicit declaration */
         switch (passnb)
@@ -124,7 +123,9 @@ uchar *label, *mnemo, *modif;
                 break;                 /* du 'case pass one' */
             case 2:
                 if (ad->s_value >= 0L) /* first value of label in first pass */
+                {
                     if (val!=ad->s_value) error (WRNDUP, "") ;
+                }
                 else if (ad->s_value == LBL_IVL)
                 {
                     if (val >= 0L)
@@ -140,7 +141,7 @@ uchar *label, *mnemo, *modif;
                     else        /* EXP_EXT */
                     {
                         ad->s_def = memoire (strlen(extexp)+1);
-                        if (ad->s_def == (uchar *) NULL)
+                        if (ad->s_def == (char *) NULL)
                             error (ERRMEM, "") ;
                         strcpy (ad->s_def, extexp) ;
                         ad->s_value = (*label=='=')? LBL_XEQ :LBL_SEQ ;
@@ -172,15 +173,14 @@ uchar *label, *mnemo, *modif;
 
 
 synopsis : struct symbol *find_label (label)
-           uchar *label
+           char *label
 description : find_label searches the symbol list for a given label.
               If the search is succesful, find_label returns a pointer to the
               structure. If not, NULL is returned.
 
 ******************************************************************************/
 
-struct symbol *find_label (label)
-uchar *label ;
+struct symbol *find_label (char *label)
 {
     struct symbol *p ;
     int test ;
@@ -204,18 +204,15 @@ uchar *label ;
 
 
 synopsis : struct symbol *add_label (label, val, exp, type, os)
-           uchar *label, *exp
+           char *label, *exp
            saddr val
-           uchar type, os
+           char type, os
 description : add_label inserts the label (name and value) in the symbol list.
 note : the symbol list is always sorted by label name.
 
 ******************************************************************************/
 
-struct symbol *add_label (label, val, exp, type, os)
-uchar *label, *exp ;
-saddr val ;
-uchar type, os ;
+struct symbol *add_label (char *label, saddr val, char *exp, char type, char os)
 {
     struct symbol *p, *s ;
     int b=1 ;
@@ -247,7 +244,7 @@ uchar type, os ;
             s->s_def = memoire (strlen (exp) + 1) ;
             strcpy (s->s_def, exp) ;
         }
-        else s->s_def = (uchar *) NULL ;
+        else s->s_def = (char *) NULL ;
     }
     else  error (ERRMEM, "") ;
 
@@ -261,7 +258,7 @@ uchar type, os ;
 
 
 synopsis : saddr symbol_value (label)
-           uchar *label
+           char *label
 description : label_value returns the value of the label, knowing its name.
               If it doesn't exist, and this occurs during the second pass, an
               error message is generated.
@@ -270,8 +267,7 @@ note : if symbol not found in the symbol list, -1 is returned. It's to the
 
 ******************************************************************************/
 
-saddr symbol_value (label)
-uchar *label ;
+saddr symbol_value (char *label)
 {
     struct symbol *ad;
     struct xtable *x ;

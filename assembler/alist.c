@@ -22,10 +22,14 @@ l_init, l_flush, l_print, l_new_page, l_line, l_page
 
 #include "aglobal.h"
 
+extern void dfl_extension () ;
+extern void look_obj () ;
+extern void format_hex () ;
+
 int l_line, l_page ;
 void l_new_page (), l_page_header () ;
 
-uchar fstdout [] = "stdout" ;
+char fstdout [] = "stdout" ;
 
 
 /******************************************************************************
@@ -40,7 +44,7 @@ description : initiates the listing mechanism, if necessary.
 
 void l_init()
 {
-    uchar tmp [MAXLEN+1] ;
+    char tmp [MAXLEN+1] ;
 
     switch (cntlist)
     {
@@ -90,7 +94,7 @@ void l_flush()
 
 synopsis : void l_print (pc, code, msg, flags)
 	   saddr pc
-	   uchar *code, *msg
+	   char *code, *msg
 	   int flags
 description : prints a line on the listing file.
 	      The line may contain  - program counter value	F_PC
@@ -103,12 +107,9 @@ description : prints a line on the listing file.
 
 ******************************************************************************/
 
-void l_print (address, code, msg, flags)
-saddr address ;
-uchar *code, *msg ;
-int flags ;
+void l_print (saddr address, char *code, char *msg, int flags)
 {
-    uchar line[MAXLEN+1], tmp[MAXLEN+1] ;
+    char line[MAXLEN+1], tmp[MAXLEN+1] ;
 
     if (!(cntlist))	return ;
 
@@ -168,8 +169,7 @@ description : forces a new page on listing file, and if flag # 0, prints a
 
 ******************************************************************************/
 
-void l_new_page (flag)
-int flag ;
+void l_new_page (int flag)
 {
     if (!(cntlist)) return ;
 

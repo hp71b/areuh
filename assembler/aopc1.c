@@ -21,11 +21,13 @@
 #include "aglobal.h"
 #include "agen.h"
 
+extern void format_hex (char *, saddr, int) ;
+
 #define UPRC(c)   ((((c)>='a')&&((c)<='z')) ? (c)-32 : (c))
 
-extern uchar *memoire() ;
+extern char *memoire() ;
 extern saddr calc_expression () ;
-extern uchar hex () ;
+extern char hex () ;
 
 
 /******************************************************************************
@@ -36,26 +38,23 @@ extern uchar hex () ;
 synopsis : void add_xused (type, pc, len, exp)
 	   int type, len
 	   saddr pc
-	   uchar *exp
+	   char *exp
 description : adds the parameters about the use of an expression containing
 	      external references.
 
 ******************************************************************************/
 
-void add_xused (type, addr, len, exp)
-int type, len ;
-saddr addr ;
-uchar *exp ;
+void add_xused (int type, saddr addr, int len, char*exp)
 {
     struct xused *xu ;
 
     xu = (struct xused *) memoire (sizeof (struct xused)) ;
     if (xu==(struct xused *) NULL)
 	error (ERRMEM, "") ;
-    xu->u_characteristic = (uchar) (type + len) ;
+    xu->u_characteristic = (char) (type + len) ;
     xu->u_pc = addr ;
     xu->u_expression = memoire (strlen (exp) + 1) ;
-    if (xu->u_expression==(uchar *)NULL)
+    if (xu->u_expression==(char *)NULL)
 	error (ERRMEM, "") ;
     strcpy (xu->u_expression, exp) ;
     xu->u_next = headxu ;     /* queue it */
@@ -69,13 +68,12 @@ uchar *exp ;
 
 
 synopsis : field_select (modif)
-	   uchar *modif
+	   char *modif
 description : to be described, in a (far) future...
 
 ******************************************************************************/
 
-int field_select (modif)
-uchar *modif ;
+int field_select (char *modif)
 {
     int r = 0 ;
     char c ;
@@ -120,13 +118,11 @@ uchar *modif ;
 }
 
 
-void regtest(ad, modif)
-struct mnemo_desc *ad ;
-uchar *modif ;
+void regtest(struct mnemo_desc *ad, char *modif)
 {
     int r ;
 
-    if (r=field_select(modif) )
+    if ((r=field_select(modif)))
     {
 	if (r==fs_A)
 	{
@@ -142,13 +138,11 @@ uchar *modif ;
 }
 
 
-void regarith (ad, modif)
-struct mnemo_desc *ad ;
-uchar *modif ;
+void regarith (struct mnemo_desc *ad, char *modif)
 {
     int r ;
 
-    if (r=field_select(modif))
+    if ((r=field_select(modif)))
     {
 	/* gen_len is 3 by default */
 	if (r==fs_A)   gen_len = 2 ;
@@ -172,20 +166,17 @@ uchar *modif ;
 }
 
 
-void reglogic (modif)
-uchar *modif ;
+void reglogic (char *modif)
 {
     int r ;
 
-    if (r=field_select(modif))
+    if ((r=field_select(modif)))
 	gen_code[2] = (r==fs_A) ? 'F' : hex(r-1) ;
     else error (WRNIWS, "") ;
 }
 
 
-int range (org, dest, nibs, offset)
-saddr org, dest, *offset ;
-int nibs ;
+int range (saddr org, saddr dest, int nibs, saddr *offset)
 {
     saddr Sixtine, Fiftine ;
     int r ;
@@ -199,13 +190,11 @@ int nibs ;
 }
 
 
-void branches (ad, modif)
-struct mnemo_desc *ad ;
-uchar *modif ;
+void branches (struct mnemo_desc *ad, char *modif)
 {
     saddr val, offset, pc_bis ;
     int fits, i, j ;
-    uchar hex_var[MAXLEN+1] ;
+    char hex_var[MAXLEN+1] ;
 
     if ((ad->m_flag & F_GOYS) && (!(prev_test)))
 	error (WRNTST, "") ;       /* needs previous test instruction */
@@ -271,8 +260,7 @@ void rtnyes()
 }
 
 
-void ptrtest (modif)
-uchar *modif ;
+void ptrtest (char *modif)
 {
     saddr val ;
 
@@ -290,8 +278,7 @@ uchar *modif ;
 }
 
 
-void stattest (modif)
-uchar *modif ;
+void stattest (char *modif)
 {
     saddr val ;
 
@@ -309,8 +296,7 @@ uchar *modif ;
 }
 
 
-void setptr (modif)
-uchar *modif ;
+void setptr (char *modif)
 {
     saddr val ;
 
@@ -328,8 +314,7 @@ uchar *modif ;
 }
 
 
-void setstat (modif)
-uchar *modif ;
+void setstat (char *modif)
 {
     saddr val ;
 
@@ -347,8 +332,7 @@ uchar *modif ;
 }
 
 
-void dparith (modif)
-uchar *modif ;
+void dparith (char *modif)
 {
     saddr val ;
 
@@ -371,8 +355,7 @@ uchar *modif ;
 }
 
 
-void datatrans (modif)
-uchar *modif ;
+void datatrans (char *modif)
 {
     saddr val ;
     int r ;
@@ -425,8 +408,7 @@ uchar *modif ;
 }
 
 
-int hex_len (modif)	  /* aCLCHX : AS5 : ED094 */
-uchar *modif ;
+int hex_len (char *modif)	  /* aCLCHX : AS5 : ED094 */
 {
     int i = 0 ;
 
@@ -442,8 +424,7 @@ uchar *modif ;
 }
 
 
-void check_last_hex (digit)
-uchar digit ;
+void check_last_hex (char digit)
 {
     if ((digit!=EOL)&&(digit!='\t')&&(digit!=' '))
     {
@@ -457,8 +438,7 @@ uchar digit ;
 }
 
 
-void nibhex (modif)
-uchar *modif ;
+void nibhex (char *modif)
 {
     int i ;
 
@@ -477,8 +457,7 @@ uchar *modif ;
 }
 
 
-void lchex (modif)
-uchar *modif ;
+void lchex (char *modif)
 {
     int i, j ;
 
@@ -508,8 +487,7 @@ uchar *modif ;
 }
 
 
-void dxhex (modif)
-uchar *modif ;
+void dxhex (char *modif)
 {
     int i, j, r ;
 
@@ -537,10 +515,9 @@ uchar *modif ;
 }
 
 
-int ascii_len (modif)
-uchar *modif ;
+int ascii_len (char *modif)
 {
-    uchar limit ;
+    char limit ;
     int i = 0 ;
 
     switch (*modif)
@@ -559,10 +536,9 @@ uchar *modif ;
 }
 
 
-void nibasc (modif)
-uchar *modif ;
+void nibasc (char *modif)
 {
-    uchar limit ;
+    char limit ;
     int i ;
 
     gen_len = ascii_len (modif) ;
@@ -594,10 +570,9 @@ uchar *modif ;
 }
 
 
-void lcasc (modif)
-uchar *modif ;
+void lcasc (char *modif)
 {
-    uchar limit ;
+    char limit ;
     int i ;
 
     gen_len = ascii_len (modif) ;

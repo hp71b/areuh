@@ -22,6 +22,9 @@ o_init (), o_print (), dump_linker_infos ()
 
 #include "aglobal.h"
 
+extern void dfl_extension (char*, char *, char *) ;
+extern void look_obj (char*, char *) ;
+
 #define fputl(lg,fd)   fwrite((char *)(&(lg)),sizeof(long int),1,fd)
 
 long int zero = 0L ;
@@ -41,7 +44,7 @@ description : open object file and, if modular assembly, mark information for
 
 void o_init ()
 {
-    uchar dfl [MAXLEN+1] ;
+    char dfl [MAXLEN+1] ;
 
     if (modular) dfl_extension (dfl, fsource, "ao") ;
     else strcpy (dfl, "lex") ;
@@ -74,15 +77,13 @@ void o_init ()
 
 
 synopsis : void o_print (str, len)
-           uchar *str
+           char *str
            int len
 description :  burp
 
 ******************************************************************************/
 
-void o_print (str, len)
-uchar *str ;
-int len ;
+void o_print (char *str, int len)
 {
     int i ;
     

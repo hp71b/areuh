@@ -9,17 +9,21 @@
  * This program is provided "as is".
  */
 
+#include <stdlib.h>
+
 #include "common.h"
 
 #define fgetl(lg,fp)  fread(&(lg),sizeof(long int),1,fp)
 
-main (argc, argv)
-int argc ;
-char *argv[] ;
+void format_hex () ;
+
+int main (int argc, char *argv [])
 {
     FILE *fp ;
-    uchar line [MAXLEN + 1], hexvar[MAXLEN+1], type ;
-    saddr magic, pc, p2, p3, nu, nl, i, j, characteristic, value ;
+    char line [MAXLEN + 1], hexvar[MAXLEN+1], type ;
+    saddr magic, pc, p2, p3, nu, nl, characteristic, value ;
+
+    int i, j ;
 
     if (argc!=2)
     {
@@ -41,7 +45,7 @@ char *argv[] ;
 	fprintf (stderr, "adp: %s is not an Areuh object file\n", argv [1]) ;
 	exit (1) ;
     }
-    printf ("version %d\n", magic - AOF_MAGIC) ;
+    printf ("version %ld\n", magic - AOF_MAGIC) ;
     if (magic!=AO_MAGIC)
     {
 	fprintf (stderr, "Wrong version\n") ;
@@ -61,7 +65,7 @@ char *argv[] ;
     {
 	printf ("%4d:", i) ;
 	j = 0 ;
-	while ((line [j] = (uchar) getc (fp)) != '\n') j++ ;
+	while ((line [j] = (char) getc (fp)) != '\n') j++ ;
 	line [j]= EOL ;
 	printf (" %-13s, val = ", line) ;     /* LBLLEN + 1 */
 	fgetl (value, fp) ;
@@ -104,7 +108,7 @@ char *argv[] ;
     }
 
     fgetl (nu, fp) ;
-    printf ("references not resolved: number = %d\n", nu) ;
+    printf ("references not resolved: number = %ld\n", nu) ;
     for (i=1; i<=nu; i++)
     {
 	fgetl (characteristic, fp) ;
@@ -121,7 +125,7 @@ char *argv[] ;
 	    case XRGTO : printf ("XRGTO") ; break ;
 	    case XRGSB : printf ("XRGSB") ; break ;
 	}
-	printf (", length = %1d", characteristic & 0xf) ;
+	printf (", length = %1ld", characteristic & 0xf) ;
 	printf (", val = %s\n", line) ;
     }
 }
@@ -129,10 +133,7 @@ char *argv[] ;
 
 /* function called indirectly, via hex5 */
 
-format_hex (str, val, dig)
-uchar *str ;
-saddr val ;
-int dig ;
+void format_hex (char *str, saddr val, int dig)
 {
     register int i, h ;
 

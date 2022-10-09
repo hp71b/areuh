@@ -24,6 +24,7 @@ hard_init, soft_init, between, term, memoire
 #include "aglobal.h"
 
 void free_mem () ;
+int try_source () ;
 
 extern void o_init() ;
 extern void dump_linker_infos () ;
@@ -32,7 +33,7 @@ extern void s_init() ;
 extern void i_tab0(), i_tab1(), i_tab2(), i_tab3(), i_tab4(), i_tab5() ;
 extern void print_ref() ;
 
-extern char *malloc () ;
+// extern char *malloc () ;
 
 /******************************************************************************
 
@@ -47,7 +48,7 @@ description : initiates the pass one. Opens source file, initializes the symbol
 
 void init ()
 {
-    uchar file [MAXLEN+1], *psource, *pfile ;
+    char file [MAXLEN+1], *psource, *pfile ;
 
     if (!try_source (fsource))	     /* if can't open succesfully */
     {
@@ -125,8 +126,7 @@ void term ()
 }
 
 
-int try_source (file)
-uchar *file ;
+int try_source (char * file)
 {
     long int magic ;
 
@@ -142,7 +142,7 @@ uchar *file ;
 	}
 	else fseek (fd_s, 0L, 0) ;
     }
-    return ((int) fd_s) ;
+    return (fd_s == NULL ? 0 : 1) ;
 }
 
 
@@ -151,19 +151,18 @@ uchar *file ;
 				  MEMOIRE
 
 
-synopsis : uchar *memoire (size)
+synopsis : char *memoire (size)
 	   int size
 description : get memory from heap using malloc. It is just a layer above
 	      malloc, including a test.
 
 ******************************************************************************/
 
-uchar *memoire (size)
-int size ;
+char *memoire (int size)
 {
-    uchar *x ;
+    char *x ;
 
-    if ((x = (uchar *) malloc (size)) == NULL)
+    if ((x = (char *) malloc (size)) == NULL)
 	error (ERRMEM, "") ;
     return (x) ;
 }
@@ -174,14 +173,12 @@ int size ;
 				    UPRC
 
 
-synopsis : void uprc (str)
-	   uchar *str
+synopsis : void uprc (char * str)
 description : uppercase a string
 
 ******************************************************************************/
 
-void uprc (str)
-uchar *str ;
+void uprc (char * str)
 {
     while (*str)
     {
@@ -198,7 +195,7 @@ uchar *str ;
 
 
 synopsis : void format_hex (str, val, dig)
-	   uchar *str
+	   char *str
            saddr val
            int dig
 description : stores into str the hexadecimal string representing the dig
@@ -207,7 +204,7 @@ description : stores into str the hexadecimal string representing the dig
 ******************************************************************************/
 
 void format_hex (str, val, dig)
-uchar *str ;
+char *str ;
 saddr val ;
 int dig ;
 {
@@ -235,7 +232,6 @@ description : frees all dynamically allocated memory during both passes.
 
 void free_mem ()
 {
-    struct xused *u ;
     struct symbol *s1, *s2 ;
     struct xtable *x1, *x2 ;
     int i ;

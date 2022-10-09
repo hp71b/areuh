@@ -28,6 +28,7 @@ extern int read_line();
 extern void parse_line(), ps_label(), process_mnemo(),
 	    l_new_page(), l_print(), o_print() ;
 extern struct symbol *add_label() ;
+extern void ps_mnemo() ;
 
 void ps_line() ;
 
@@ -44,7 +45,7 @@ description :
 
 void pass()
 {
-    uchar line[MAXLEN+1];
+    char line[MAXLEN+1];
     int c;
 
     pc = 0 ;
@@ -73,7 +74,7 @@ void pass()
 
 
 synopsis : void ps_line (line)
-	   uchar *line
+	   char *line
 description : parses the line read from the input (breaks the line into three
 	      components), processes the label if necessary, processes the
 	      mnemonic if necessary, and does the listing and object file
@@ -81,10 +82,9 @@ description : parses the line read from the input (breaks the line into three
 
 ******************************************************************************/
 
-void ps_line (line)
-uchar *line ;
+void ps_line (char *line)
 {
-    uchar label[LBLLEN+2], mnemo[7], modif[MAXLEN+1] ;
+    char label[LBLLEN+2], mnemo[7], modif[MAXLEN+1] ;
     struct mnemo_desc *ad ;
 
     parse_line (line, label, mnemo, modif) ;

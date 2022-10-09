@@ -11,13 +11,12 @@
 
 #include "lglobal.h"
 
-extern void l_init () ;
-extern uchar *memoire () ;
+extern char *memoire () ;
 
-void free_mem () ;
+extern void look_obj (), report (), l_flush (), l_init (), free_mem() ;
 
 
-init()
+void init()
 {
     struct symbol *s ;
     int i ;
@@ -41,10 +40,10 @@ init()
     passnb = 1 ;
 }
 
-between ()
+void between ()
 {
     long int magic = AL_MAGIC ;
-    uchar dfl [MAXLEN+1] ;
+    char dfl [MAXLEN+1] ;
 
     strcpy (dfl, "lex") ;
     look_obj (flex, dfl) ;
@@ -55,7 +54,7 @@ between ()
     passnb = 2 ;
 }
 
-term ()
+void term ()
 {
     if (fclose (fplex))
         error (ERRCLO, flex) ;

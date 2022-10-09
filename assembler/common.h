@@ -10,6 +10,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 
 #define MAXLEN 256
@@ -21,7 +23,6 @@
 ******************************************************************************/
 
 typedef long int saddr ;	      /* Saturne address. At least 32 bits   */
-typedef unsigned char uchar ;	      /* unsigned characters, for accents    */
 typedef short int sint ;	      /* 16 bits */
 
 /******************************************************************************
@@ -81,7 +82,7 @@ typedef short int sint ;	      /* 16 bits */
 #define EXP_EXT -2L
 
 extern int relabs ;
-extern uchar extexp[] ;
+extern char extexp[] ;
 
 #include "err.h"
 extern void error () ;
@@ -93,9 +94,11 @@ extern void error () ;
  MACHINE DEPENDANCIES
 ******************************************************************************/
 
-#define HPUX		     1
+#define HPUX		     0
 #define ATARI_LATTICE	     0
 #define PC_MSC		     0		/* PC (beuark, Microsoft C) */
+#define MACOS		     1
+#define FREEBSD		     0
 
 #if HPUX
 extern void format_time(), load_file() ;
@@ -122,3 +125,20 @@ extern void format_time(), load_file() ;
 extern char skipvar ;
 #define skip(fp) fread(&skipvar,1,1,fp) ;
 #endif
+
+#if MACOS
+extern void format_time(), load_file() ;
+#define HP71EP "hp71.ep"
+#define RAO_MODE "r"
+#define WAO_MODE "w"
+#define skip(fp)
+#endif
+
+#if FREEBSD
+extern void format_time(), load_file() ;
+#define HP71EP "hp71.ep"
+#define RAO_MODE "r"
+#define WAO_MODE "w"
+#define skip(fp)
+#endif
+

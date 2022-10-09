@@ -2,7 +2,7 @@
 # Makefile genere automatiquement par mkmf (le masque par defaut a ete adapte)
 #
 
-CFLAGS	      = -O
+CFLAGS	      = -O -Wall -Wextra -Werror
 LDFLAGS	      =
 LIBS	      =
 SYSLIBS	      =
@@ -69,4 +69,4 @@ tags:           $(HDRS) $(SRCS)
 # Ne rien changer apres cette ligne !
 #
 ###
-amg.o: /usr/include/stdio.h
+amg.o: 

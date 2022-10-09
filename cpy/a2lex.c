@@ -9,12 +9,16 @@
  * This program is provided "as is".
  */
 
+void output (char c) ;
+void init (),  term (), error () ;
+int min () ;
+
 #include "copy.h"
 
 char outname [100] ;
 FILE *fpdev ;
 
-init ()
+void init ()
 {
 #ifdef unix
     fpdev = stdout ;
@@ -25,14 +29,13 @@ init ()
 #endif
 }
 
-output (c)
-uchar c ;
+void output (char c)
 {
     putc ((int) c, fpdev) ;
     if (ferror (fpdev)) error (ERRWRT, outname) ;
 }
 
-term ()
+void term ()
 {
     if (fclose (fpdev))
         error (ERRCLO, outname) ;

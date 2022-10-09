@@ -23,7 +23,8 @@ read_line, parse_line, next_token, stcp
 
 #include "aglobal.h"
 
-
+int next_token (char *line, int i) ;
+int stcp (char *str1, char *str2, int i, int lmax) ;
 
 /******************************************************************************
 
@@ -32,15 +33,13 @@ read_line, parse_line, next_token, stcp
 
 synopsis : int read_line (fd, line)
            FILE *fd
-           uchar *line
+           char *line
 description : read_line reads a line from the source file, or stdin.
 note : read_line returns -1 if EOF reached, 0 otherwise.
 
 ******************************************************************************/
 
-int read_line (fd, line)
-FILE *fd ;
-uchar line[] ;
+int read_line (FILE *fd, char line[])
 {
     int c, i = -1 ;
 
@@ -48,7 +47,7 @@ uchar line[] ;
     {
         c = getc (fd) ;
         if (i<MAXLEN)
-            line[++i] = (uchar) c ;
+            line[++i] = (char) c ;
     }
     while ((c!=EOF)&&(c!='\n')) ;
     line[i] = EOL ;
@@ -69,7 +68,7 @@ uchar line[] ;
 
 
 synopsis : void parse_line (line, label, mnemo, modif)
-           uchar *line, *label, *mnemo, *modif
+           char *line, *label, *mnemo, *modif
 description : parse_line breaks the line read from the source file in three
               components :
                 - label : max LBLLEN or LBLLEN+1 characters
@@ -79,8 +78,7 @@ note : parse_line doesn't return a result, the line is always valid.
 
 ******************************************************************************/
 
-void parse_line(line, label, mnemo, modif)
-uchar *line, *label, *mnemo, *modif ;
+void parse_line(char *line, char *label, char *mnemo, char *modif)
 {
     int i=0, j ;
 
@@ -124,7 +122,7 @@ uchar *line, *label, *mnemo, *modif ;
 
 
 synopsis : int next_token (line, i)
-           uchar *line
+           char *line
            int i
 descrption : next_token looks the line, from the i-th position, for the next
              non-blank character or end of line. If end-of-line is reached,
@@ -134,9 +132,7 @@ descrption : next_token looks the line, from the i-th position, for the next
 
 ******************************************************************************/
 
-int next_token (line, i)
-uchar *line ;
-int i ;
+int next_token (char *line, int i)
 {
     while ((line[i]!=EOL)&&((line[i]==' ')||(line[i]=='\t'))) i++ ;
     return ((line[i]) ? i : -1);
@@ -149,7 +145,7 @@ int i ;
 
 
 synopsis : int stcp (str1, str2, i, lmax)
-           uchar *str1, *str2
+           char *str1, *str2
            int i, lmax
 description : stcp is an alternate name for "string_copy". In fact, stcp copies
               str2 (from i-th position) into str1 (from 0-th position) until a
@@ -162,9 +158,7 @@ replace with "strncpy" in C library for future releases
 
 ******************************************************************************/
 
-int stcp (str1, str2, i, lmax)
-uchar *str1, *str2;
-int i, lmax;
+int stcp (char *str1, char *str2, int i, int lmax)
 {
     int j=0;
     do

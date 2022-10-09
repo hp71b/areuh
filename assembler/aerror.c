@@ -39,11 +39,9 @@ descritpion : reports an error message on listing file, if any, else on
 
 ******************************************************************************/
 
-void error (errnb, msg)
-int errnb ;
-uchar *msg ;
+void error (int errnb, char *msg)
 {
-    uchar txt[MAXLEN+1], tmp[MAXLEN+1];
+    char txt[MAXLEN+1], tmp[MAXLEN+1];
 
     if ((errnb<0)||(passnb==2))
     {

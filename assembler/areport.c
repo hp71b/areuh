@@ -24,8 +24,9 @@ print_ref, print_status, print_label, print_xref
 #include "aglobal.h"
 
 extern void l_print (), l_new_page () ;
+extern void format_hex ();
 
-uchar format [15], formateq [16], xformat [MAXLEN], xf[15] ;
+char format [15], formateq [16], xformat [MAXLEN], xf[15] ;
 
 void print_status (), print_label (), print_xref () ;
 
@@ -74,7 +75,7 @@ description : reports some status lines after the assembly
 
 void print_status()
 {
-    uchar line[MAXLEN+1], tmp[MAXLEN+1] ;
+    char line[MAXLEN+1], tmp[MAXLEN+1] ;
 
     l_print (0L, "", "", F_TL) ;
     l_print (0L, "", "", F_TL) ;
@@ -125,7 +126,7 @@ void print_label ()
 {
     struct symbol *t ;
     struct xtable *x ;
-    uchar line[MAXLEN+1], tmp[MAXLEN+1] ;
+    char line[MAXLEN+1], tmp[MAXLEN+1] ;
     int i ;
 
     strcpy (l_stitle, "**** SYMBOL TABLE ****") ;
@@ -168,7 +169,7 @@ void print_label ()
                     }
                     if ((t->s_value!=LBL_UDF)&&(t->s_value!=LBL_EXT))
                         sprintf (tmp, "%s  %04d - ", line, t->s_decl) ;
-                    else sprintf (tmp, "%s       - ", line, t->s_decl) ;
+                    else sprintf (tmp, "%s       - ", line) ;
                     x = t->s_xref ;
                     if (x)
                     {
@@ -196,18 +197,16 @@ void print_label ()
 
 synopsis : void print_xref (x, line)
            struct xtable *x
-           uchar *line
+           char *line
 description : prints the complete cross-reference list backward from the end.
               x is the end of xref list, line is the line to be printed first.
 
 ******************************************************************************/
 
-void print_xref (x, line)
-struct xtable *x ;
-uchar *line ;
+void print_xref (struct xtable *x, char *line)
 {
     int col = LBLLEN+21 ;        /* column number */
-    uchar tmp[MAXLEN+1], strnum[MAXLEN+1] ;
+    char tmp[MAXLEN+1], strnum[MAXLEN+1] ;
 
     strcpy (tmp, line) ;
     while (x)

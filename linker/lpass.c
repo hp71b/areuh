@@ -11,11 +11,11 @@
 
 #include "lglobal.h"
 
-
-extern void add_label (), add_unres () ;
+extern void add_label (), add_unres (), read_usage (), resolve_usage () ;
 extern long int calc_expression () ;
-extern uchar *memoire () ;
+extern char *memoire () ;
 
+void pass1_bis (), ps_part12 () ;
 
 /******************************************************************************
 
@@ -28,7 +28,7 @@ description : processes the first pass on the object files. Open each file,
 
 ******************************************************************************/
 
-pass1 ()
+void pass1 ()
 {
     tmodule [1].m_ad = (saddr) 0 ;
     for (file=1; file<=nfile; file++)	ps_part12 () ;
@@ -51,10 +51,10 @@ description : in first pass, process parts one and two of an object file, and
 
 ******************************************************************************/
 
-ps_part12 ()
+void ps_part12 ()
 {
     FILE *fp ;
-    uchar label [LBLLEN+2], def [MAXLEN+1], type ;
+    char label [LBLLEN+2], def [MAXLEN+1], type ;
     saddr size, val ;
     long int part2, nl, magic ;
     int j, k ;
@@ -80,20 +80,20 @@ ps_part12 ()
     for (j=1; j<=nl; j++)
     {
 	k = 0 ;
-	while ((label [k] = (uchar) fgetc (fp)) != '\n') k++ ;
+	while ((label [k] = (char) fgetc (fp)) != '\n') k++ ;
 	label [k] = EOL ;
 	fgetl (val, fp) ;
 	if (ferror (fp)) error (ERRRD, fname [file]) ;
 	if (val<0L)
 	{
 	    k = 0 ;
-	    while ((def [k] = (uchar) fgetc (fp)) != '\n') k++ ;
+	    while ((def [k] = (char) fgetc (fp)) != '\n') k++ ;
 	    def [k] = EOL ;
 	    val = calc_expression (def) ;
 	}
 	else
 	{
-	    type = (uchar) getc (fp) ;
+	    type = (char) getc (fp) ;
 	    switch (type)
 	    {
 		case LABS :
@@ -125,7 +125,7 @@ description : at the end of first pass, if still undefined labels, try to
 
 ******************************************************************************/
 
-pass1_bis ()
+void pass1_bis ()
 {
     struct unres *xdef ;
     saddr val ;
@@ -166,7 +166,7 @@ description : during pass two, we open each file, we read the code into a
 void pass2 ()
 {
     FILE *fp ;
-    uchar def [MAXLEN+1], *code ;
+    char def [MAXLEN+1], *code ;
     int j ;
     long int size, bidon, nu, characteristic ;
 
@@ -188,7 +188,7 @@ void pass2 ()
 	for (j=1; j<=nu; j++)
 	{
 	    read_usage (&characteristic, def, fp) ;
-	    resolve_usage (characteristic, def, fp, code) ;
+	    resolve_usage (characteristic, def, code) ;
 	}
 
 	fwrite (code, (int) size, 1, fplex) ;

@@ -35,5 +35,5 @@
 #define ar_E 3
 #define ar_F 4
 
-extern uchar hex () ;
+extern char hex () ;
 extern int dec () ;

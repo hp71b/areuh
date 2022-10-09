@@ -2,7 +2,7 @@
 # Makefile genere automatiquement par mkmf (le masque par defaut a ete adapte)
 #
 
-CFLAGS	      = -O
+CFLAGS	      = -O -Wall -Wextra -Werror
 LDFLAGS	      =
 LIBS	      =
 SYSLIBS	      =
@@ -88,12 +88,11 @@ tags:           $(HDRS) $(SRCS)
 # Ne rien changer apres cette ligne !
 #
 ###
-exp.o: flag.h lglobal.h common.h /usr/include/stdio.h err.h
-lerror.o: lglobal.h common.h /usr/include/stdio.h err.h
-linit.o: lglobal.h common.h /usr/include/stdio.h err.h
-llist.o: lglobal.h common.h /usr/include/stdio.h err.h
-lmain.o: lglobal.h common.h /usr/include/stdio.h err.h
-lpass.o: lglobal.h common.h /usr/include/stdio.h err.h
-lutil.o: lglobal.h common.h /usr/include/stdio.h err.h
-mdep.o: flag.h lglobal.h common.h /usr/include/stdio.h err.h \
-	/usr/include/sys/types.h /usr/include/sys/stat.h
+exp.o: flag.h lglobal.h common.h err.h
+lerror.o: lglobal.h common.h err.h
+linit.o: lglobal.h common.h err.h
+llist.o: lglobal.h common.h err.h
+lmain.o: lglobal.h common.h err.h
+lpass.o: lglobal.h common.h err.h
+lutil.o: lglobal.h common.h err.h
+mdep.o: flag.h lglobal.h common.h err.h

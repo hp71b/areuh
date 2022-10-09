@@ -28,7 +28,7 @@ extern void regtest(), regarith(), reglogic(), branches(), rtnyes(), ptrtest(),
 
             bss(), eject(), endx(), list(), title(), stitle(), lex(), id(),
             msg(), poll(), entryx(), charx(), key(), token(), bin(), chain(),
-            endtxt(), endifx(), absx(), rdsymb(), elsex(), ifx() ;
+            endtxt(), endifx(), rdsymb(), elsex(), ifx() ;
 
 
 /******************************************************************************
@@ -37,15 +37,13 @@ extern void regtest(), regarith(), reglogic(), branches(), rtnyes(), ptrtest(),
 
 
 synopsis : ps_mnemo (line, modif, ad)
-           uchar *line, *modif
+           char *line, *modif
            struct mnemo_desc *ad 
 description : pass control to the appropriate routine, to process the opcode.
 
 ******************************************************************************/
 
-ps_mnemo (line, modif, ad)
-uchar *line, *modif ;
-struct mnemo_desc *ad ;
+void ps_mnemo (char *line, char *modif, struct mnemo_desc *ad)
 {
     switch (ad->m_class)
     {
@@ -152,7 +150,7 @@ struct mnemo_desc *ad ;
             endifx() ;
             break ;
         case 41 :
-            absx(modif) ;
+            /* absx(modif) ; */
             break ;
         case 42 :
             rdsymb(modif) ;
@@ -179,8 +177,7 @@ description : finds index of a mnemonic in mnemo_table, and returns it, -1
 
 ******************************************************************************/
 
-struct mnemo_desc *find_mnemo (mnemo)
-uchar *mnemo ;
+struct mnemo_desc *find_mnemo (char * mnemo)
 {
     int i, m, b = 1 ;
     long int h = 0 ;
@@ -203,17 +200,16 @@ uchar *mnemo ;
                                    HEX
 
 
-synopsis : uchar hex (digit)
+synopsis : char hex (digit)
            int digit
 description : returns the hexadecimal representation of integer 'digit' (in
               ['0'..'9','A'..'Z']).
 
 ******************************************************************************/
 
-uchar hex (digit)
-int digit ;
+char hex (int digit)
 {
-    return ((uchar) ( (digit<=9) ? digit+48 : digit+55) ) ;
+    return ((char) ( (digit<=9) ? digit+48 : digit+55) ) ;
 }
 
 
@@ -223,13 +219,12 @@ int digit ;
 
 
 synopsis : int dec (digit)
-           uchar digit
+           char digit
 description : returns the decimal equivalent of hexadecimal character 'digit'.
 
 *****************************************************************************/
 
-int dec (digit)
-uchar digit ;
+int dec (char digit)
 {
     return ((digit<'A') ? (int) digit - 48 : (int) digit - 55 ) ;
 }

@@ -10,8 +10,12 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 long int con () ;
+
+void skip () ;
+int hex (char c) ;
 
 typedef unsigned char uchar ;
 
@@ -27,34 +31,32 @@ typedef unsigned short int int16 ;
 #define ERRLEN	       7		/* bad REL(5) FiLeNd field */
 #define ERRINT	       8		/* interface error */
 
-uchar	*file ;
+char	*file ;
 
-uchar	name [10] ;
+char	name [10] ;
 FILE	*fp ;
 int16	ftype ;
 int32	lnib, lbyte, lsect ;
 
-uchar	*pgm ;				/* name of current program */
+char	*pgm ;				/* name of current program */
 
-main (argc, argv)
-int argc ;
-char *argv[] ;
+int main (int argc, char *argv [])
 {
     long int magic ;
     int32 l ;
-    uchar tab [4] ;
+    char tab [4] ;
     int i, j, m ;
     int mod ;
 
-    pgm = (uchar *) argv [0] ;		/* program name */
+    pgm = (char *) argv [0] ;		/* program name */
 
     switch (argc)
     {
 	case 1 :
-	    file = (uchar *) "lex" ;	/* default name */
+	    file = (char *) "lex" ;	/* default name */
 	    break ;
 	case 2 :
-	    file = (uchar *) argv [1] ;
+	    file = (char *) argv [1] ;
 	    break ;
 	default :
 	    error (ERRUSA, "") ;
@@ -72,7 +74,7 @@ char *argv[] ;
 	error (ERRNAL, file) ;		/* not a Lex file */
 
     for (i=0; i<8; i++)
-	name [i] = (uchar) con (2) ;
+	name [i] = (char) con (2) ;
     name [8] = name [9] = ' ' ;
 
     ftype = (int32) con (4) ;		/* file type */
@@ -92,27 +94,27 @@ char *argv[] ;
 /* header output */
 
     for (i=0; i<10; i++)		/* file name */
-	output ((uchar) name [i]) ;
-    output ((uchar) (ftype / 256)) ;	/* file type */
-    output ((uchar) (ftype % 256)) ;
+	output ((char) name [i]) ;
+    output ((char) (ftype / 256)) ;	/* file type */
+    output ((char) (ftype % 256)) ;
     for (i=1; i<=4; i++)		/* start sector */
-	output ((uchar) 0) ;
+	output ((char) 0) ;
     l = lsect ;
     for (i=3; i>=0; i--)		/* length in sectors */
     {
-	tab [i] = (uchar) l & 0xff ;
+	tab [i] = (char) l & 0xff ;
 	l >>= 8 ;
     }
     for (i=0; i<4; i++)
 	output (tab [i]) ;
     for (i=0; i<6; i++)			/* date and time */
-	output ((uchar) 0) ;
-    output ((uchar) 0x80) ;		/* 80 */
-    output ((uchar) 0x01) ;		/* 01 */
+	output ((char) 0) ;
+    output ((char) 0x80) ;		/* 80 */
+    output ((char) 0x01) ;		/* 01 */
     l = lnib ;
     for (i=0; i<4; i++) 		/* length in nibbles */
     {
-	output ((uchar) (l & (int32) 0xff)) ;
+	output ((char) (l & (int32) 0xff)) ;
 	l >>= 8 ;
     }
 
@@ -124,10 +126,10 @@ char *argv[] ;
     {
 	m = (i == lsect && mod != 0) ? min (256, mod) : 256 ;
 	for (j=0; j<m ; j++)
-	    output ((uchar) con (2)) ;
+	    output ((char) con (2)) ;
     }
     for (j=m; j<256; j++)
-	output ((uchar) 0) ;
+	output ((char) 0) ;
 
 /* end */
 
@@ -138,19 +140,18 @@ char *argv[] ;
     exit (0) ;
 }
 
-long int con (n)
-int n ;
+long int con (int n)
 {
     int i ;
     long int res ;
-    uchar buf [1024] ;
+    char buf [1024] ;
     int first ;
 
     res = 0 ;
     first = 1 ;
     for (i=0; i<n; i++)
     {
-	buf [i] = (uchar) getc (fp) ;
+	buf [i] = (char) getc (fp) ;
 	if (first && feof (fp))
 	    error (ERRLEN, "") ;
 	first = 0 ;
@@ -162,10 +163,9 @@ int n ;
     return res ;
 }
 
-skip (n)
-int n ;
+void skip (int n)
 {
-    uchar buf [1024] ;
+    char buf [1024] ;
 
     fread (buf, n, 1, fp) ;
     if (ferror (fp))
@@ -174,21 +174,17 @@ int n ;
 	error (ERRLEN, "") ;
 }
 
-int min (a, b)
-int a, b ;
+int min (int a, int b)
 {
     return a <= b ? a : b ;
 }
 
-int hex (c)
-uchar c ;
+int hex (char c)
 {
     return (c >= 'A' && c <= 'F') ? c - 'A' + 10 : c - '0' ;
 }
 
-error (code, str)
-int code ;
-uchar *str ;
+void error (int code, char *str)
 {
     switch (code)
     {

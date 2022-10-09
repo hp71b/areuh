@@ -11,9 +11,9 @@
 
 #include "lglobal.h"
 
-extern char *malloc () ;
 extern saddr calc_expression () ;
-uchar *memoire () ;
+void format_hex () ;
+char *memoire () ;
 
 /******************************************************************************
 
@@ -25,13 +25,12 @@ description : find address of label, return address of structure describing it.
 
 ******************************************************************************/
 
-struct symbol *find_label (label)
-char *label ;
+struct symbol *find_label (char *label)
 {
     struct symbol *p ;
     int test ;
 
-    p = h_label [label[1]]->s_next ;
+    p = h_label [(int) label[1]]->s_next ;
     while (p)
     {
 	test = strcmp (label, p->s_name) ;
@@ -49,7 +48,7 @@ char *label ;
 
 
 synopsis : void add_label (label, val, os)
-	   uchar *label
+	   char *label
 	   saddr val
 	   int os
 description : add a label in label table and, if already defined, add it to
@@ -57,12 +56,9 @@ description : add a label in label table and, if already defined, add it to
 
 ******************************************************************************/
 
-void add_label (label, val, os)
-uchar *label ;
-saddr val ;
-int os ;
+void add_label (char *label, saddr val, int os)
 {
-    uchar error_text [MAXLEN+1] ;
+    char error_text [MAXLEN+1] ;
     struct symbol *p, *s ;
     int b = 1 ;
 
@@ -70,13 +66,13 @@ int os ;
     if (p)
     {
 	sprintf (error_text, "%s in files %s and %s", label,
-			     fname[p->s_file],
+			     fname[(int) p->s_file],
 			     fname[file]) ;
 	error (WRNDUP, error_text) ;	       /* duplicate label */
     }
     else
     {
-	s = p = h_label [label[1]] ;
+	s = p = h_label [(int) label[1]] ;
 	while ((b)&&(s))
 	{
 	    if (strcmp (label, s->s_name)<0) b = 0 ;
@@ -93,7 +89,7 @@ int os ;
 	p = s ;
     }
     p->s_value = val ;
-    p->s_file = (uchar) file ;
+    p->s_file = (char) file ;
     p->s_os = os ;
 }
 
@@ -113,14 +109,13 @@ description : during first part of pass one, if a label is undefined, add it
 
 ******************************************************************************/
 
-void add_unres (label, def)
-uchar *label, *def ;
+void add_unres (char *label, char *def)
 {
     struct unres *x ;
 
     x = (struct unres *) memoire (sizeof (struct unres)) ;
     strcpy (x->u_label, label) ;
-    x->u_file = (uchar) file ;
+    x->u_file = (char) file ;
     x->u_def = memoire (strlen (def) + 1) ;
     strcpy (x->u_def, def) ;
     x->u_next = head_unres ;
@@ -141,25 +136,20 @@ description : read an entry in third part of object file fp.
 
 ******************************************************************************/
 
-void read_usage (characteristic, def, fp)
-long int *characteristic ;
-char *def ;
-FILE *fp ;
+void read_usage (int *characteristic, char *def, FILE *fp)
 {
     int i ;
 
     fread (characteristic, sizeof (long int), 1, fp) ;
     fread (&pc, sizeof (saddr), 1, fp) ;
     i = 0 ;
-    while ((def [i] = (uchar) fgetc (fp)) != '\n') i++ ;
+    while ((def [i] = (char) fgetc (fp)) != '\n') i++ ;
     def [i] = EOL ;
     if (ferror (fp)) error (ERRRD, fname [file]) ;
 }
 
 
-int lrange (offset, nibs)
-saddr *offset ;
-int nibs ;
+int lrange (saddr *offset, int nibs)
 {
     saddr Sixtine, Fiftine ;
     int r ;
@@ -187,12 +177,9 @@ description : make all the work which is to be made by a linker. Resolve
 
 ******************************************************************************/
 
-void resolve_usage (characteristic, def, fp, code)
-saddr characteristic ;
-uchar *def, *code ;
-FILE *fp ;
+void resolve_usage (saddr characteristic, char *def, char *code)
 {
-    uchar hexa [MAXLEN+1] ;
+    char hexa [MAXLEN+1] ;
     saddr type, source, dest, offset ;
     int i, j ;
 
@@ -242,13 +229,12 @@ FILE *fp ;
 
 
 synopsis : saddr symbol_value (label)
-	   uchar *label
+	   char *label
 description : fetch a label, and return its value.
 
 ******************************************************************************/
 
-saddr symbol_value (label)
-uchar *label ;
+saddr symbol_value (char *label)
 {
     struct symbol *ad ;
     struct xtable *x, *y, *z ;
@@ -280,19 +266,18 @@ uchar *label ;
 				  MEMOIRE
 
 
-synopsis : uchar *memoire (size)
+synopsis : char *memoire (size)
 	   int size
 description : get memory from heap using malloc. It is just a layer above
 	      malloc, including a test.
 
 ******************************************************************************/
 
-uchar *memoire (size)
-int size ;
+char *memoire (int size)
 {
-    uchar *x ;
+    char *x ;
 
-    if ((x = (uchar *) malloc (size)) == NULL)
+    if ((x = (char *) malloc (size)) == NULL)
 	error (ERRMEM, "") ;
     return (x) ;
 }
@@ -304,7 +289,7 @@ int size ;
 
 
 synopsis : void format_hex (str, val, dig)
-	   uchar *str
+	   char *str
 	   saddr val
 	   int dig
 description : stores into str the hexadecimal string representing the dig
@@ -312,10 +297,7 @@ description : stores into str the hexadecimal string representing the dig
 
 ******************************************************************************/
 
-format_hex (str, val, dig)
-uchar *str ;
-saddr val ;
-int dig ;
+void format_hex (char *str, saddr val, int dig)
 {
     register int i, h ;
 

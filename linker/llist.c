@@ -11,6 +11,8 @@
 
 #include "lglobal.h"
 
+extern void dfl_extension (), look_obj (), format_hex () ;
+
 FILE *fd_l ;
 int l_line = 0, l_page = 1 ;
 
@@ -20,7 +22,7 @@ void l_files (), l_xref () ;
 
 void l_init ()
 {
-    uchar dfl [MAXLEN+1] ;
+    char dfl [MAXLEN+1] ;
 
     switch (cntlist)
     {
@@ -40,8 +42,7 @@ void l_init ()
 }
 
 
-void l_new_page (flag)
-int flag ;
+void l_new_page (int flag)
 {
     if (!cntlist) return ;
     for (; l_line<page_size; l_line++) fprintf (fd_l, "\n") ;
@@ -65,8 +66,7 @@ void l_flush ()
 }
 
 
-void l_print (line)
-uchar *line ;
+void l_print (char *line)
 {
     if (!cntlist)
     {
@@ -97,7 +97,7 @@ void report ()
 
 void l_files ()
 {
-    uchar line[MAXLEN+1], start[MAXLEN+1], end[MAXLEN+1], length[MAXLEN+1] ;
+    char line[MAXLEN+1], start[MAXLEN+1], end[MAXLEN+1], length[MAXLEN+1] ;
     int i ;
     saddr val ;
 
@@ -133,8 +133,8 @@ void l_files ()
 
 void l_xref ()
 {
-    uchar line [MAXLEN+1], tmp [MAXLEN+1], rel [MAXLEN+1] ;
-    uchar format [MAXLEN+1], xformat [MAXLEN+1] ;
+    char line [MAXLEN+1], tmp [MAXLEN+1], rel [MAXLEN+1] ;
+    char format [MAXLEN+1], xformat [MAXLEN+1] ;
     struct symbol *t ;
     struct xtable *x ;
     int i ;
@@ -149,14 +149,14 @@ void l_xref ()
             if (!t->s_os)
             {
                 hex5 (tmp, t->s_value) ;
-                sprintf (line, format, t->s_name, tmp, fname[t->s_file]) ;
+                sprintf (line, format, t->s_name, tmp, fname[(int) t->s_file]) ;
                 l_print (line) ;
                 x = t->s_xref ;
                 while (x)
                 {
-                    hex5 (tmp, tmodule[x->x_file].m_ad + x->x_pc) ;
+                    hex5 (tmp, tmodule[(int) x->x_file].m_ad + x->x_pc) ;
                     hex5 (rel, x->x_pc) ;
-                    sprintf (line, xformat, "", tmp, rel, fname[x->x_file]) ;
+                    sprintf (line, xformat, "", tmp, rel, fname[(int) x->x_file]) ;
                     l_print (line) ;
                     x = x->x_next ;
                 }

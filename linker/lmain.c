@@ -11,24 +11,24 @@
 
 #include "lglobal.h"
 
+extern void init (), pass1 (), between (), pass2 (), term () ;
+
 saddr pc ;
 int nfile, file ;
-uchar flex [MAXLEN+1], flisting [MAXLEN+1] ;
+char flex [MAXLEN+1], flisting [MAXLEN+1] ;
 FILE *fplex ;
 struct module tmodule[MAXMOD] ;
 struct unres *head_unres ;
 struct symbol *h_label[256] ;
-uchar *code ;
-uchar *fname[MAXMOD+2] ;
+char *code ;
+char *fname[MAXMOD+2] ;
 int page_size, cntlist, xref, passnb, errnb ;
 int passbis = 0 ;
 
 void prompt (), read_line (), make_name () ;
-extern uchar *memoire () ;
+extern char *memoire () ;
 
-main (argc, argv)
-int argc ;
-uchar *argv[] ;
+int main (int argc, char *argv[])
 {
     int r = 0, c, i ;
     int errflg = 0 ;
@@ -110,7 +110,7 @@ description : if "-p" option is used, or if no parameters are passed to "ald",
 
 void prompt ()
 {
-    uchar line [MAXLEN+1] ;
+    char line [MAXLEN+1] ;
 
     do
     {
@@ -145,9 +145,7 @@ void prompt ()
     }
 }
 
-void read_line (fp, line)
-FILE *fp ;
-uchar *line ;
+void read_line (FILE *fp, char *line)
 {
     int c, i = -1 ;
 
@@ -168,17 +166,15 @@ uchar *line ;
 
 synopsis : void make_name (i, file)
            int i
-           uchar *file
+           char *file
 description : parse file name, and store file name with proper extension in
   fname table.
 
 ******************************************************************************/
 
-void make_name (i, file)
-int i ;
-uchar *file ;
+void make_name (int i, char *file)
 {
-    uchar *pfile ;
+    char *pfile ;
 
     pfile = file ;
     while ((*pfile)&&(*pfile!='.')) pfile++ ;

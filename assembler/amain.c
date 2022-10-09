@@ -20,18 +20,22 @@ main, prompt
 
 ******************************************************************************/
 
+#include <unistd.h>
+
 #include "aglobal.h"
+
+void prompt () ;
 
 struct symbol *h_label[256] ;
 
 struct xused *headxu ;
 
-uchar fsource [MAXLEN+1], flisting [MAXLEN+1], fobject [MAXLEN+1] ;
+char fsource [MAXLEN+1], flisting [MAXLEN+1], fobject [MAXLEN+1] ;
 FILE *fd_s, *fd_l, *fd_o ;
 
 int cntlist, cntlist_ref ;
 int page_size ;
-uchar l_title[MAXLEN+1], l_stitle[MAXLEN+1];
+char l_title[MAXLEN+1], l_stitle[MAXLEN+1];
 int errcnt, error_this_line ;
 int print_this_line ;
 int xref ;
@@ -41,7 +45,7 @@ int linenb ;
 
 saddr pc ;
 int gen_len ;
-uchar gen_code[19] ;
+char gen_code[19] ;
 int prev_test ;
 int exec, in_if, in_else ;
 
@@ -72,9 +76,7 @@ description : Aas is a cross assembler which runs on UNIX based machines.
 
 ******************************************************************************/
 
-main (argc, argv)
-int argc ;
-char *argv[] ;
+int main (int argc, char *argv[])
 {
     int  r = 0, c, i ;
     int errflg = 0 ;
@@ -172,9 +174,9 @@ description : if "-p" option is used, prompts the user for files to be used.
 
 ******************************************************************************/
 
-prompt ()
+void prompt ()
 {
-    uchar line[MAXLEN+1] ;
+    char line[MAXLEN+1] ;
 
     while (fsource[0]==EOL)
     {

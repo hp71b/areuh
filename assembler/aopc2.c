@@ -24,6 +24,7 @@
 extern void l_new_page(), l_print (), ps_line () ;
 extern int ascii_len () ;
 extern saddr calc_expression () ;
+extern void uprc () ;
 
 int ltok = 255 ;	   /* lowest token */
 int htok = 0 ;		   /* highest token */
@@ -36,15 +37,14 @@ int ckey = 0 ;		   /* current key macro-op */
 			       FILE_HEADER
 
 synopsis : file_header (modif, type)
-	   uchar *modif, *line
+	   char *modif, *line
 description : expand a macro-op (LEX or BIN)
 
 ******************************************************************************/
 
-file_header (modif, type)
-uchar *modif, *type ;
+void file_header (char *modif, char *type)
 {
-    uchar line [MAXLEN+1], *pline, limit, c ;
+    char line [MAXLEN+1], *pline, limit, c ;
     int i = 0, later = 0 ;
 
     uprc (modif) ;
@@ -102,8 +102,7 @@ description : areuh
 
 ******************************************************************************/
 
-void bss (modif)
-uchar *modif ;
+void bss (char *modif)
 {
     saddr val ;
     int i, m ;
@@ -134,11 +133,10 @@ void endx ()
 }
 
 
-void list (modif)
-uchar *modif ;
+void list (char *modif)
 {
     int r = 0 ;
-    uchar c ;
+    char c ;
 
     uprc (modif) ;
     c = *modif++ ;
@@ -169,23 +167,20 @@ uchar *modif ;
 }
 
 
-void title (modif)
-uchar *modif ;
+void title (char *modif)
 {
     if (*l_title==EOL) strcpy (l_title, modif) ;
 }
 
 
-void stitle (modif)
-uchar *modif ;
+void stitle (char *modif)
 {
     strcpy (l_stitle, modif) ;
     eject () ;
 }
 
 
-void lex (modif, line)
-uchar *modif, *line ;
+void lex (char *modif, char *line)
 {
     switch (passnb)
     {
@@ -204,10 +199,9 @@ uchar *modif, *line ;
 }
 
 
-void id (modif, line)
-uchar *modif, *line ;
+void id (char *modif, char *line)
 {
-    uchar tmp [MAXLEN+1] ;
+    char tmp [MAXLEN+1] ;
 
     switch (passnb)
     {
@@ -231,10 +225,9 @@ uchar *modif, *line ;
 }
 
 
-void msg (modif, line)
-uchar *modif, *line ;
+void msg (char *modif, char *line)
 {
-    uchar tmp [MAXLEN+1] ;
+    char tmp [MAXLEN+1] ;
     saddr val ;
 
     switch (passnb)
@@ -256,10 +249,9 @@ uchar *modif, *line ;
 }
 
 
-void poll (modif, line)
-uchar *modif, *line ;
+void poll (char *modif, char *line)
 {
-    uchar tmp [MAXLEN+1] ;
+    char tmp [MAXLEN+1] ;
     saddr val ;
 
     switch (passnb)
@@ -281,10 +273,9 @@ uchar *modif, *line ;
 }
 
 
-void entryx (modif, line)
-uchar *modif, *line ;
+void entryx (char *modif, char *line)
 {
-    uchar tmp [MAXLEN+1] ;
+    char tmp [MAXLEN+1] ;
 
     switch (passnb)
     {
@@ -304,10 +295,9 @@ uchar *modif, *line ;
 }
 
 
-void charx (modif, line)
-uchar *modif, *line ;
+void charx (char *modif, char *line)
 {
-    uchar tmp [MAXLEN+1] ;
+    char tmp [MAXLEN+1] ;
 
     switch (passnb)
     {
@@ -324,10 +314,9 @@ uchar *modif, *line ;
 }
 
 
-void key (modif, line)
-uchar *modif, *line ;
+void key (char *modif, char *line)
 {
-    uchar tmp [MAXLEN+1] ;
+    char tmp [MAXLEN+1] ;
 
     switch (passnb)
     {
@@ -358,10 +347,9 @@ uchar *modif, *line ;
 }
 
 
-void token (modif, line)
-uchar *modif, *line ;
+void token (char *modif, char *line)
 {
-    uchar tmp [MAXLEN+1] ;
+    char tmp [MAXLEN+1] ;
     saddr tok ;
 
     switch (passnb)
@@ -382,8 +370,7 @@ uchar *modif, *line ;
 }
 
 
-void bin (modif, line)
-uchar *modif, *line ;
+void bin (char *modif, char *line)
 {
     switch (passnb)
     {
@@ -402,10 +389,9 @@ uchar *modif, *line ;
 }
 
 
-void chain (modif, line)
-uchar *modif, *line ;
+void chain (char *modif, char *line)
 {
-    uchar tmp [MAXLEN+1] ;
+    char tmp [MAXLEN+1] ;
 
     switch (passnb)
     {
@@ -429,8 +415,7 @@ uchar *modif, *line ;
 }
 
 
-void endtxt (line)
-uchar *line ;
+void endtxt (char *line)
 {
     switch (passnb)
     {
@@ -457,15 +442,13 @@ void endifx ()
     exec = 1 ;
 }
 
-void absx (modif)	/* FUTURE USE... */
-uchar *modif ;
-{
-}
+// void absx (uchar *modif)       /* FUTURE USE... */
+// {
+// }
 
-void rdsymb (modif)
-uchar *modif ;
+void rdsymb (char *modif)
 {
-    uchar *pmodif ;
+    char *pmodif ;
 
     if (passnb==1)
     {
@@ -491,8 +474,7 @@ void elsex ()
     }
 }
 
-void ifx (modif)
-uchar *modif ;
+void ifx (char *modif)
 {
     saddr val ;
 

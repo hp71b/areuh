@@ -30,16 +30,17 @@ trunc, next_char, append_extexp
 #include "lglobal.h"
 #endif
 
-uchar extexp [4*MAXLEN] ;
-uchar *pexp, *pextexp ;
-uchar *xlabel ;
+char extexp [4*MAXLEN] ;
+char *pexp, *pextexp ;
+char *xlabel ;
 int relabs ;
 
 extern saddr symbol_value() ;
 
 saddr reduce_E(), reduce_T(), reduce_F(), reduce_B(), reduce_X(), reduce_P(),
       dec_value(), hex_value(), bin_value(), ascii_value(), label_value(),
-      apply(), trunc() ;
+      truncate24() ;
+saddr apply (saddr val1, char op, saddr val2, char relabs1, char relabs2) ;
 void next_char(), append_extexp() ;
 
 
@@ -49,7 +50,7 @@ void next_char(), append_extexp() ;
 
 
 synopsis : saddr calc_expression (exp)
-           uchar *exp
+           char *exp
 description : That's the expression evaluator. Productions used are :
 
     E -> T { {+|-} T }*
@@ -77,8 +78,7 @@ note : Algorithm used is recursive descent (Mr Vermeulen would be horrified !)
 
 ******************************************************************************/
 
-saddr calc_expression (exp)
-uchar *exp;
+saddr calc_expression (char *exp)
 {
     saddr val;
 
@@ -107,7 +107,7 @@ description : This function reduces a given expression starting at pexp.
 saddr reduce_E()
 {
     saddr val1, val2;
-    uchar op, lrelabs;
+    char op, lrelabs;
 
     val1 = reduce_T () ;
 
@@ -135,7 +135,7 @@ description : same as above, for T-production
 saddr reduce_T ()
 {
     saddr val1, val2 ;
-    uchar op, lrelabs ;
+    char op, lrelabs ;
 
     val1 = reduce_F () ;
     while ((((op = *pexp)=='*')||(op=='/'))&&(val1!=EXP_ERR))
@@ -162,7 +162,7 @@ description : same as reduce_E
 saddr reduce_F ()
 {
     saddr val1, val2;
-    uchar op, lrelabs ;
+    char op, lrelabs ;
 
     val1 = reduce_B () ;
     while ((((op = *pexp)=='&')||(op=='!'))&&(val1!=EXP_ERR))
@@ -190,20 +190,20 @@ description : reduces a boolean factor. This must be done by reduction of minus
 saddr reduce_B ()
 {
     saddr val;
-    uchar op ;
+    char op ;
 
     op = *pexp ;
 
-    if ((op=='-')||(op=='\`')) next_char () ;
+    if ((op=='-')||(op=='`')) next_char () ;
     val = reduce_X () ;
     if (val<0L)
         return(val) ;
     switch (op)
     {
         case '-' :
-            return (trunc (-val)) ;
-        case '\`' :
-            return (trunc (~val)) ;
+            return (truncate24 (-val)) ;
+        case '`' :
+            return (truncate24 (~val)) ;
         default :
             return (val) ;
     }
@@ -223,7 +223,7 @@ description : same as reduce_E
 saddr reduce_X ()
 {
     saddr val1, val2;
-    uchar op, lrelabs;
+    char op, lrelabs;
 
     val1 = reduce_P () ;
     while ((((op = *pexp)=='~')||(op=='^'))&&(val1!=EXP_ERR))
@@ -252,7 +252,7 @@ note : rule P -> D is implemented "in line" in this code (not as a separate
 saddr reduce_P ()
 {
     saddr val ;
-    uchar limit, line[MAXLEN] ;
+    char limit, line[MAXLEN] ;
 
     switch (*pexp)
     {
@@ -358,7 +358,7 @@ saddr dec_value ()
 
     do
     {
-        val = trunc (val * 10L + (saddr) (*pexp-'0') ) ;
+        val = truncate24 (val * 10L + (saddr) (*pexp-'0') ) ;
         next_char () ;
     }
     while ((*pexp>='0')&&(*pexp<='9')) ;
@@ -387,7 +387,7 @@ saddr hex_value ()
         if (*pexp<='9') i = (long int) ((*pexp) - '0') ;
         else if (*pexp<='F') i = (long int) ((*pexp) - 'A' + 10) ;
         else i = (long int) ((*pexp) - 'a' + 10) ;
-        val = trunc (val*16L +  i) ;
+        val = truncate24 (val*16L +  i) ;
         next_char () ;
     }
     return (val) ;
@@ -410,7 +410,7 @@ saddr bin_value ()
 
     while ((*pexp=='0')||(*pexp=='1'))
     {
-        val = trunc (val*2L + ((saddr) ((*pexp) - '0'))) ;
+        val = truncate24 (val*2L + ((saddr) ((*pexp) - '0'))) ;
         next_char () ;
     }
     return (val) ;
@@ -429,13 +429,13 @@ description : same as above, but the search is stopped when encoutered a '.
 ******************************************************************************/
 
 saddr ascii_value (limit)
-uchar limit ;
+char limit ;
 {
     saddr val = 0 ;
 
     while ((*pexp!=EOL)&&(*pexp!=limit))
     {
-        val = trunc (val*256L + ((saddr) *pexp)) ;
+        val = truncate24 (val*256L + ((saddr) *pexp)) ;
         next_char () ;
     }
     return (val) ;
@@ -455,7 +455,7 @@ description : parses the symbol, then tries to return the value founded in the
 
 saddr label_value ()
 {
-    uchar label[LBLLEN+2], *plabel ;
+    char label[LBLLEN+2], *plabel ;
     int mx, need_par = 0, j = 0 ;
     saddr val ;
 
@@ -506,16 +506,14 @@ saddr label_value ()
 
 synopsis : saddr apply (val1, op, val2, relabs1, relabs2)
            saddr val1, val2
-           uchar op, relabs1, relabs2
+           char op, relabs1, relabs2
 description : calculate the value of binary operator op applied to operands
               val1 & val2.
 note : under overflow condition, numbers are truncated to 20 bits.
 
 ******************************************************************************/
 
-saddr apply (val1, op, val2, relabs1, relabs2)
-uchar op, relabs1, relabs2 ;
-saddr val1, val2 ;
+saddr apply (saddr val1, char op, saddr val2, char relabs1, char relabs2)
 {
     saddr val ;
 
@@ -525,13 +523,13 @@ saddr val1, val2 ;
     switch (op)
     {
         case '+' :
-            val = trunc (val1 + val2) ;
+            val = truncate24 (val1 + val2) ;
             break ;
         case '-' :
-            val = trunc (val1 - val2 ) ;
+            val = truncate24 (val1 - val2 ) ;
             break ;
         case '*' :
-            val = trunc (val1 * val2 ) ;
+            val = truncate24 (val1 * val2 ) ;
             break ;
         case '/' :
 #if ASSEMBLER
@@ -548,7 +546,7 @@ saddr val1, val2 ;
             val = val1 | val2 ;
             break ;
         case '~' :
-            val = trunc (val1*256 + val2) ;
+            val = truncate24 (val1*256 + val2) ;
             break ;
         case '^' :
             if ((val1<0)||(val2<0)||((val1==0)&&(val2==0)))
@@ -564,7 +562,7 @@ saddr val1, val2 ;
             {
                 val = 1 ;
                 for (;val2>0 ; val2--) val *= val1 ;
-                val = trunc (val) ;
+                val = truncate24 (val) ;
             }
             break ;
     }
@@ -580,14 +578,13 @@ saddr val1, val2 ;
                                      TRUNC
 
 
-synopsis : saddr trunc (val)
+synopsis : saddr truncate24 (val)
            saddr val
 description : truncates 32 bits integer to 24 bits.
 
 ******************************************************************************/
 
-saddr trunc (val)
-saddr val ;
+saddr truncate24 (saddr val)
 {
     return (val & 0xffffff) ;
 }
@@ -617,13 +614,12 @@ void next_char ()
 
 
 synopsis : void append_extexp (line)
-           uchar *line ;
+           char *line ;
 description : append line to extexp string.
 
 ******************************************************************************/
 
-void append_extexp (line)
-uchar *line ;
+void append_extexp (char *line)
 {
     while (*line)
     {

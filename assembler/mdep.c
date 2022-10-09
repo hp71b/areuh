@@ -27,8 +27,7 @@ extern struct symbol *add_label() ;
 
 #if HPUX
 
-void format_time (str)
-uchar *str ;
+void format_time (char *str)
 {
     long int l ;
 
@@ -49,10 +48,10 @@ char *tab[] = { "",
 		0 } ;
 
 void load_file (file)
-uchar *file ;
+char *file ;
 {
     int i = 0 ;
-    uchar name [MAXLEN+1] ;
+    char name [MAXLEN+1] ;
     saddr val ;
     FILE *fp ;
 
@@ -67,7 +66,7 @@ uchar *file ;
 #if LINKER
     file = 0 ;
 #endif
-    while (fscanf (fp, "%s\n%X\n", name, &val) != EOF)
+    while (fscanf (fp, "%s\n%lX\n", name, &val) != EOF)
     {
 #if ASSEMBLER
 	add_label (name, val, "", LABS, 1) ;
@@ -87,8 +86,7 @@ uchar *file ;
  *   if exists and not directory, ok
  *   if exists and directory, then append "<dir>/<default>" */
 
-look_obj (fname, dfl)
-uchar *fname, *dfl ;
+void look_obj (char *fname, char *dfl)
 {
     struct stat buf ;
 
@@ -106,10 +104,9 @@ uchar *fname, *dfl ;
  * default extension.
  */
 
-dfl_extension (object, source, extension)
-uchar *object, *source, *extension ;
+void dfl_extension (char *object, char *source, char *extension)
 {
-    uchar *pname ;
+    char *pname ;
 
     strcpy (object, source) ;
     pname = object ;
@@ -126,7 +123,7 @@ uchar *object, *source, *extension ;
 char skipvar ;
 
 void format_time (str)
-uchar *str ;
+char *str ;
 {
     strcpy (str, "Areuh Tagada Bouzouh bouzouh areuh areuh... et toc !") ;
 }
@@ -161,16 +158,16 @@ char *argv[], *optstr ;
     return ((int) car) ;
 }
 
-uchar *tab[] = { "",
-		 "A:",
-		 "A:\\TABLE\\",
-		 0 } ;
+char *tab[] = { "",
+		"A:",
+		"A:\\TABLE\\",
+		0 } ;
 
 void load_file (file)
-uchar *file ;
+char *file ;
 {
     int i = 0 ;
-    uchar name [MAXLEN+1] ;
+    char name [MAXLEN+1] ;
     saddr val ;
     FILE *fp ;
 
@@ -204,7 +201,7 @@ uchar *file ;
 char skipvar ;
 
 void format_time (str)
-uchar *str ;
+char *str ;
 {
     long int l ;
 
@@ -246,19 +243,19 @@ char *argv[], *optstr ;
     return ((int) car) ;
 }
 
-uchar *tab[] = { "",
-		 "c:",
-		 "c:\\hp71\\",
-		 "c:\\lib\\hp71\\",
-		 "c:\\lib\\",
-		 "c:\\areuh\\lib\\",
-		 0 } ;
+char *tab[] = { "",
+		"c:",
+		"c:\\hp71\\",
+		"c:\\lib\\hp71\\",
+		"c:\\lib\\",
+		"c:\\areuh\\lib\\",
+		0 } ;
 
 void load_file (file)
-uchar *file ;
+char *file ;
 {
     int i = 0 ;
-    uchar name [MAXLEN+1] ;
+    char name [MAXLEN+1] ;
     saddr val ;
     FILE *fp ;
 
@@ -293,7 +290,7 @@ uchar *file ;
  *   if exists and directory, then append "<dir>/<default>" */
 
 look_obj (fname, dfl)
-uchar *fname, *dfl ;
+char *fname, *dfl ;
 {
     struct stat buf ;
 
@@ -312,9 +309,9 @@ uchar *fname, *dfl ;
  */
 
 dfl_extension (object, source, extension)
-uchar *object, *source, *extension ;
+char *object, *source, *extension ;
 {
-    uchar *pname ;
+    char *pname ;
 
     strcpy (object, source) ;
     pname = object ;
@@ -324,3 +321,183 @@ uchar *object, *source, *extension ;
 }
 
 #endif	  /* PC_MSC */
+
+#if MACOS
+
+void format_time (char *str)
+{
+    long int l ;
+
+    extern long int time () ;
+    extern char *ctime () ;
+
+    l = time (0L) ;
+    strcpy (str, ctime (&l)) ;
+    str [strlen (str) - 1] = EOL ;
+}
+
+char *tab[] = { "",
+		"/usr/local/share/",
+		0 } ;
+
+void load_file (file)
+char *file ;
+{
+    int i = 0 ;
+    char name [MAXLEN+1] ;
+    saddr val ;
+    FILE *fp ;
+
+    fp = (FILE *) NULL ;
+    while ((tab[i])&&(!fp))
+    {
+	sprintf (name, "%s%s", tab[i++], file) ;
+	fp = fopen (name, "r") ;
+    }
+    if (!fp) error (ERROPN, file) ;
+
+#if LINKER
+    file = 0 ;
+#endif
+    while (fscanf (fp, "%s\n%lX\n", name, &val) != EOF)
+    {
+#if ASSEMBLER
+	add_label (name, val, "", LABS, 1) ;
+#else
+	add_label (name, val, 1) ;
+#endif
+    }
+    if (ferror (fp)) error (ERRWRT, file) ;
+    if (fclose (fp)) error (ERRCLO, file) ;
+}
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+/* look for object file (object code or listing file)
+ *   if non existent, ok
+ *   if exists and not directory, ok
+ *   if exists and directory, then append "<dir>/<default>" */
+
+void look_obj (char *fname, char *dfl)
+{
+    struct stat buf ;
+
+    if (*fname == EOL)		   /* if fname == "" then default it */
+	strcpy (fname, dfl) ;
+
+    if (!stat (fname, &buf))	   /* file exists. Is it a directory ? */
+    {
+	if ((buf.st_mode & S_IFMT) == S_IFDIR)
+	    sprintf (fname, "%s/%s", fname, dfl) ;
+    }
+}
+
+/* build a default file name, based on "source" basename and a given
+ * default extension.
+ */
+
+void dfl_extension (char *object, char *source, char *extension)
+{
+    char *pname ;
+
+    strcpy (object, source) ;
+    pname = object ;
+    while ((*pname)&&(*pname!='.')) pname++ ;
+    if (*pname==EOL) *pname = '.' ;
+    strcpy (pname+1, extension) ;
+}
+
+#endif	   /* MACOS */
+
+#if FREEBSD
+
+void format_time (char *str)
+{
+    long int l ;
+
+    extern long int time () ;
+    extern char *ctime () ;
+
+    l = time (0L) ;
+    strcpy (str, ctime (&l)) ;
+    str [strlen (str) - 1] = EOL ;
+}
+
+char *tab[] = { "",
+		"/usr/lib/",
+		"/usr/local/lib/",
+		"/lib/",
+		"/hp71/lib/",
+		"/local/lib/",
+		0 } ;
+
+void load_file (file)
+char *file ;
+{
+    int i = 0 ;
+    char name [MAXLEN+1] ;
+    saddr val ;
+    FILE *fp ;
+
+    fp = (FILE *) NULL ;
+    while ((tab[i])&&(!fp))
+    {
+	sprintf (name, "%s%s", tab[i++], file) ;
+	fp = fopen (name, "r") ;
+    }
+    if (!fp) error (ERROPN, file) ;
+
+#if LINKER
+    file = 0 ;
+#endif
+    while (fscanf (fp, "%s\n%lX\n", name, &val) != EOF)
+    {
+#if ASSEMBLER
+	add_label (name, val, "", LABS, 1) ;
+#else
+	add_label (name, val, 1) ;
+#endif
+    }
+    if (ferror (fp)) error (ERRWRT, file) ;
+    if (fclose (fp)) error (ERRCLO, file) ;
+}
+
+#include <sys/types.h>
+#include <sys/stat.h>
+
+/* look for object file (object code or listing file)
+ *   if non existent, ok
+ *   if exists and not directory, ok
+ *   if exists and directory, then append "<dir>/<default>" */
+
+void look_obj (char *fname, char *dfl)
+{
+    struct stat buf ;
+
+    if (*fname == EOL)		   /* if fname == "" then default it */
+	strcpy (fname, dfl) ;
+
+    if (!stat (fname, &buf))	   /* file exists. Is it a directory ? */
+    {
+	if ((buf.st_mode & S_IFMT) == S_IFDIR)
+	    sprintf (fname, "%s/%s", fname, dfl) ;
+    }
+}
+
+/* build a default file name, based on "source" basename and a given
+ * default extension.
+ */
+
+void dfl_extension (char *object, char *source, char *extension)
+{
+    char *pname ;
+
+    strcpy (object, source) ;
+    pname = object ;
+    while ((*pname)&&(*pname!='.')) pname++ ;
+    if (*pname==EOL) *pname = '.' ;
+    strcpy (pname+1, extension) ;
+}
+
+#endif	   /* FREEBSD */

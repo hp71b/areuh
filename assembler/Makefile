@@ -2,7 +2,7 @@
 # Makefile genere automatiquement par mkmf (le masque par defaut a ete adapte)
 #
 
-CFLAGS	      = -O
+CFLAGS	      = -O -Wall -Wextra -Werror
 LDFLAGS	      =
 LIBS	      =
 SYSLIBS	      =
@@ -59,7 +59,8 @@ OBJS	      = aerror.o \
 		tabgrp.o \
 		tabopc.o
 
-MANDEST	      = /usr/local/man/man1.Z
+#MANDEST	      = /usr/local/man/man1.Z
+#MANDEST	      = /usr/local/share/man/man1
 
 MANPAGES      = aas.1
 
@@ -105,20 +106,19 @@ tags:           $(HDRS) $(SRCS)
 # Ne rien changer apres cette ligne !
 #
 ###
-aerror.o: aglobal.h common.h /usr/include/stdio.h err.h
-ainput.o: aglobal.h common.h /usr/include/stdio.h err.h
-alabel.o: aglobal.h common.h /usr/include/stdio.h err.h
-alist.o: aglobal.h common.h /usr/include/stdio.h err.h
-amain.o: aglobal.h common.h /usr/include/stdio.h err.h
-amnemo.o: aglobal.h common.h /usr/include/stdio.h err.h
-aobj.o: aglobal.h common.h /usr/include/stdio.h err.h
-aopc1.o: aglobal.h common.h /usr/include/stdio.h err.h agen.h
-aopc2.o: aglobal.h common.h /usr/include/stdio.h err.h agen.h
-apass.o: aglobal.h common.h /usr/include/stdio.h err.h agen.h
-areport.o: aglobal.h common.h /usr/include/stdio.h err.h
-autil.o: aglobal.h common.h /usr/include/stdio.h err.h
-exp.o: flag.h aglobal.h common.h /usr/include/stdio.h err.h
-mdep.o: flag.h aglobal.h common.h /usr/include/stdio.h err.h \
-	/usr/include/sys/types.h /usr/include/sys/stat.h
-tabgrp.o: aglobal.h common.h /usr/include/stdio.h err.h
-tabopc.o: aglobal.h common.h /usr/include/stdio.h err.h
+aerror.o: aglobal.h common.h err.h
+ainput.o: aglobal.h common.h err.h
+alabel.o: aglobal.h common.h err.h
+alist.o: aglobal.h common.h err.h
+amain.o: aglobal.h common.h err.h
+amnemo.o: aglobal.h common.h err.h
+aobj.o: aglobal.h common.h err.h
+aopc1.o: aglobal.h common.h err.h agen.h
+aopc2.o: aglobal.h common.h err.h agen.h
+apass.o: aglobal.h common.h err.h agen.h
+areport.o: aglobal.h common.h err.h
+autil.o: aglobal.h common.h err.h
+exp.o: flag.h aglobal.h common.h err.h
+mdep.o: flag.h aglobal.h common.h err.h
+tabgrp.o: aglobal.h common.h err.h
+tabopc.o: aglobal.h common.h err.h
