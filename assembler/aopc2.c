@@ -21,11 +21,6 @@
 #include "aglobal.h"
 #include "agen.h"
 
-extern void l_new_page(), l_print (), ps_line () ;
-extern int ascii_len () ;
-extern saddr calc_expression () ;
-extern void uprc () ;
-
 int ltok = 255 ;	   /* lowest token */
 int htok = 0 ;		   /* highest token */
 int ctok = 0 ;		   /* current token */
@@ -42,7 +37,8 @@ description : expand a macro-op (LEX or BIN)
 
 ******************************************************************************/
 
-void file_header (char *modif, char *type)
+static void
+file_header (char *modif, char *type)
 {
     char line [MAXLEN+1], *pline, limit, c ;
     int i = 0, later = 0 ;
@@ -102,7 +98,8 @@ description : areuh
 
 ******************************************************************************/
 
-void bss (char *modif)
+void
+bss (char *modif)
 {
     saddr val ;
     int i, m ;
@@ -120,20 +117,23 @@ void bss (char *modif)
 }
 
 
-void eject ()
+void
+eject (void)
 {
     l_new_page (1) ;
     print_this_line = 0 ;
 }
 
 
-void endx ()
+void
+endx (void)
 {
     running = 0 ;
 }
 
 
-void list (char *modif)
+void
+list (char *modif)
 {
     int r = 0 ;
     char c ;
@@ -167,20 +167,23 @@ void list (char *modif)
 }
 
 
-void title (char *modif)
+void
+title (char *modif)
 {
     if (*l_title==EOL) strcpy (l_title, modif) ;
 }
 
 
-void stitle (char *modif)
+void
+stitle (char *modif)
 {
     strcpy (l_stitle, modif) ;
     eject () ;
 }
 
 
-void lex (char *modif, char *line)
+void
+lex (char *modif, char *line)
 {
     switch (passnb)
     {
@@ -199,7 +202,8 @@ void lex (char *modif, char *line)
 }
 
 
-void id (char *modif, char *line)
+void
+id (char *modif, char *line)
 {
     char tmp [MAXLEN+1] ;
 
@@ -225,7 +229,8 @@ void id (char *modif, char *line)
 }
 
 
-void msg (char *modif, char *line)
+void
+msg (char *modif, char *line)
 {
     char tmp [MAXLEN+1] ;
     saddr val ;
@@ -249,7 +254,8 @@ void msg (char *modif, char *line)
 }
 
 
-void poll (char *modif, char *line)
+void
+poll (char *modif, char *line)
 {
     char tmp [MAXLEN+1] ;
     saddr val ;
@@ -273,7 +279,8 @@ void poll (char *modif, char *line)
 }
 
 
-void entryx (char *modif, char *line)
+void
+entryx (char *modif, char *line)
 {
     char tmp [MAXLEN+1] ;
 
@@ -295,7 +302,8 @@ void entryx (char *modif, char *line)
 }
 
 
-void charx (char *modif, char *line)
+void
+charx (char *modif, char *line)
 {
     char tmp [MAXLEN+1] ;
 
@@ -314,7 +322,8 @@ void charx (char *modif, char *line)
 }
 
 
-void key (char *modif, char *line)
+void
+key (char *modif, char *line)
 {
     char tmp [MAXLEN+1] ;
 
@@ -347,7 +356,8 @@ void key (char *modif, char *line)
 }
 
 
-void token (char *modif, char *line)
+void
+token (char *modif, char *line)
 {
     char tmp [MAXLEN+1] ;
     saddr tok ;
@@ -370,7 +380,8 @@ void token (char *modif, char *line)
 }
 
 
-void bin (char *modif, char *line)
+void
+bin (char *modif, char *line)
 {
     switch (passnb)
     {
@@ -389,7 +400,8 @@ void bin (char *modif, char *line)
 }
 
 
-void chain (char *modif, char *line)
+void
+chain (char *modif, char *line)
 {
     char tmp [MAXLEN+1] ;
 
@@ -415,7 +427,8 @@ void chain (char *modif, char *line)
 }
 
 
-void endtxt (char *line)
+void
+endtxt (char *line)
 {
     switch (passnb)
     {
@@ -434,7 +447,8 @@ void endtxt (char *line)
     } /* du switch */
 }
 
-void endifx ()
+void
+endifx ()
 {
     if (!(in_if || in_else))
 	error (WRNIIF, "") ;      /* Invalid conditional structure */
@@ -446,7 +460,8 @@ void endifx ()
 // {
 // }
 
-void rdsymb (char *modif)
+void
+rdsymb (char *modif)
 {
     char *pmodif ;
 
@@ -459,7 +474,8 @@ void rdsymb (char *modif)
     }
 }
 
-void elsex ()
+void
+elsex ()
 {
     if (!in_if)
     {
@@ -474,7 +490,8 @@ void elsex ()
     }
 }
 
-void ifx (char *modif)
+void
+ifx (char *modif)
 {
     saddr val ;
 

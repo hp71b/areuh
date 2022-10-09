@@ -23,17 +23,8 @@ hard_init, soft_init, between, term, memoire
 
 #include "aglobal.h"
 
-void free_mem () ;
-int try_source () ;
-
-extern void o_init() ;
-extern void dump_linker_infos () ;
-extern void l_init(), l_flush() ;
-extern void s_init() ;
-extern void i_tab0(), i_tab1(), i_tab2(), i_tab3(), i_tab4(), i_tab5() ;
-extern void print_ref() ;
-
-// extern char *malloc () ;
+static void free_mem (void) ;
+static int try_source (char * file) ;
 
 /******************************************************************************
 
@@ -46,7 +37,8 @@ description : initiates the pass one. Opens source file, initializes the symbol
 
 ******************************************************************************/
 
-void init ()
+void
+init (void)
 {
     char file [MAXLEN+1], *psource, *pfile ;
 
@@ -87,7 +79,8 @@ description : terminates the passe one, and prepares pass two.
 
 ******************************************************************************/
 
-void between()
+void
+between(void)
 {
     int r ;
 
@@ -114,7 +107,8 @@ description : ends the pass two, and thus the assembly.
 
 ******************************************************************************/
 
-void term ()
+void
+term (void)
 {
     if (fclose (fd_s)) error (ERRCLO, fsource) ;
     if (modular) dump_linker_infos () ;
@@ -126,16 +120,17 @@ void term ()
 }
 
 
-int try_source (char * file)
+static int
+try_source (char * file)
 {
     long int magic ;
 
     fd_s = fopen (file, "r") ;
     if (fd_s)
     {
-	fread (&magic, sizeof (long int), 1, fd_s) ;
-	if (((magic>=ALF_MAGIC)&&(magic<=AL_MAGIC))||
-	    ((magic>=AOF_MAGIC)&&(magic<=AO_MAGIC)))
+	if (fread (&magic, sizeof (long int), 1, fd_s) != 1 ||
+	    ((magic>=ALF_MAGIC)&&(magic<=AL_MAGIC))||
+	    ((magic>=AOF_MAGIC)&&(magic<=AO_MAGIC)) )
 	{
 	    fclose (fd_s) ;
 	    fd_s = (FILE *) NULL ;
@@ -158,7 +153,8 @@ description : get memory from heap using malloc. It is just a layer above
 
 ******************************************************************************/
 
-char *memoire (int size)
+char *
+memoire (int size)
 {
     char *x ;
 
@@ -178,7 +174,8 @@ description : uppercase a string
 
 ******************************************************************************/
 
-void uprc (char * str)
+void
+uprc (char * str)
 {
     while (*str)
     {
@@ -203,10 +200,8 @@ description : stores into str the hexadecimal string representing the dig
 
 ******************************************************************************/
 
-void format_hex (str, val, dig)
-char *str ;
-saddr val ;
-int dig ;
+void
+format_hex (char *str, saddr val, int dig)
 {
     register int i, h ;
 
@@ -230,7 +225,8 @@ description : frees all dynamically allocated memory during both passes.
 
 ******************************************************************************/
 
-void free_mem ()
+static void
+free_mem (void)
 {
     struct symbol *s1, *s2 ;
     struct xtable *x1, *x2 ;

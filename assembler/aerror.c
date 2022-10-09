@@ -23,9 +23,6 @@ error
 
 #include "aglobal.h"
 
-extern void l_print() ;
-
-
 /******************************************************************************
 
                                      ERROR
@@ -41,7 +38,7 @@ descritpion : reports an error message on listing file, if any, else on
 
 void error (int errnb, char *msg)
 {
-    char txt[MAXLEN+1], tmp[MAXLEN+1];
+    char txt[MAXLEN+1], tmp[MAXLEN+1+2];
 
     if ((errnb<0)||(passnb==2))
     {

@@ -11,12 +11,10 @@
 
 #include "lglobal.h"
 
-extern char *memoire () ;
+static void free_mem (void);
 
-extern void look_obj (), report (), l_flush (), l_init (), free_mem() ;
-
-
-void init()
+void
+init(void)
 {
     struct symbol *s ;
     int i ;
@@ -40,7 +38,8 @@ void init()
     passnb = 1 ;
 }
 
-void between ()
+void
+between (void)
 {
     long int magic = AL_MAGIC ;
     char dfl [MAXLEN+1] ;
@@ -50,11 +49,12 @@ void between ()
     if (!(fplex = fopen (flex, "w")))
         error (ERROPN, flex) ;
     fwrite (&magic, sizeof (long int), 1, fplex) ;
-    if (ferror (fplex)) error (flex) ;
+    if (ferror (fplex)) error (ERRWRT, flex) ;
     passnb = 2 ;
 }
 
-void term ()
+void
+term (void)
 {
     if (fclose (fplex))
         error (ERRCLO, flex) ;
@@ -65,7 +65,8 @@ void term ()
 }
 
 
-void free_mem ()
+static void
+free_mem (void)
 {
     struct symbol *s1, *s2 ;
     struct xtable *x1, *x2 ;

@@ -23,12 +23,11 @@ print_ref, print_status, print_label, print_xref
 
 #include "aglobal.h"
 
-extern void l_print (), l_new_page () ;
-extern void format_hex ();
-
 char format [15], formateq [16], xformat [MAXLEN], xf[15] ;
 
-void print_status (), print_label (), print_xref () ;
+static void print_status(void) ;
+static void print_label (void) ;
+static void print_xref (struct xtable *x, char *line) ;
 
 /******************************************************************************
 
@@ -44,7 +43,8 @@ description : at the end of assembly (end of second pass), programmer want some
 
 ******************************************************************************/
 
-void print_ref ()
+void
+print_ref (void)
 {
     sprintf (format, " %%-%ds %%s", LBLLEN) ;
     sprintf (formateq, "%%-%ds %%s", LBLLEN+1) ;
@@ -73,9 +73,10 @@ description : reports some status lines after the assembly
 
 ******************************************************************************/
 
-void print_status()
+static void
+print_status(void)
 {
-    char line[MAXLEN+1], tmp[MAXLEN+1] ;
+    char line[MAXLEN+1+20], tmp[MAXLEN+1] ;
 
     l_print (0L, "", "", F_TL) ;
     l_print (0L, "", "", F_TL) ;
@@ -122,11 +123,12 @@ description : prints a complete list of labels encoutered in the assembly.
 
 ******************************************************************************/
 
-void print_label ()
+static void
+print_label (void)
 {
     struct symbol *t ;
     struct xtable *x ;
-    char line[MAXLEN+1], tmp[MAXLEN+1] ;
+    char line[MAXLEN+1], tmp[MAXLEN+1+20] ;
     int i ;
 
     strcpy (l_stitle, "**** SYMBOL TABLE ****") ;
@@ -203,7 +205,8 @@ description : prints the complete cross-reference list backward from the end.
 
 ******************************************************************************/
 
-void print_xref (struct xtable *x, char *line)
+static void
+print_xref (struct xtable *x, char *line)
 {
     int col = LBLLEN+21 ;        /* column number */
     char tmp[MAXLEN+1], strnum[MAXLEN+1] ;

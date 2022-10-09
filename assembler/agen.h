@@ -34,6 +34,3 @@
 #define ar_D 2
 #define ar_E 3
 #define ar_F 4
-
-extern char hex () ;
-extern int dec () ;

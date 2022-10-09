@@ -15,8 +15,6 @@
 
 #include "common.h"
 
-#define fgetl(lg,fp) fread(&(lg),sizeof(long int),1,fp)
-
 /******************************************************************************
   MODULE TABLE
 ******************************************************************************/
@@ -91,3 +89,43 @@ extern int nfile, file ;
 extern int cntlist, page_size, xref, passnb, errnb, passbis ;
 
 extern char hp71ep [] ;
+
+/******************************************************************************
+  FUNCTIONS
+******************************************************************************/
+
+// exp.c
+extern saddr calc_expression (char *) ;
+
+// lerror.c
+extern void error (int errno, char *msg);
+
+// linit.c
+extern void init (void) ;
+extern void between (void) ;
+extern void term (void) ;
+
+// llist.c
+extern void l_init (void) ;
+extern void l_print (char *);
+extern void l_flush (void);
+extern void report (void) ;
+
+// lmain.c
+
+// lpass.c
+extern void pass1 (void) ;
+extern void pass2 (void) ;
+
+// lutil.c
+extern void add_label (char *, saddr, int);
+extern void add_unres (char *, char *);
+extern void read_usage (int *, char *, FILE *);
+extern void resolve_usage (saddr, char *, char *) ;
+extern saddr symbol_value(char *) ;
+extern char *memoire (int) ;
+extern void format_hex (char *, saddr, int) ;
+
+// mdep.c
+extern void dfl_extension (char *, char *, char *);
+extern void look_obj (char *, char *);

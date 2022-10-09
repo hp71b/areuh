@@ -35,13 +35,21 @@ char *pexp, *pextexp ;
 char *xlabel ;
 int relabs ;
 
-extern saddr symbol_value() ;
-
-saddr reduce_E(), reduce_T(), reduce_F(), reduce_B(), reduce_X(), reduce_P(),
-      dec_value(), hex_value(), bin_value(), ascii_value(), label_value(),
-      truncate24() ;
-saddr apply (saddr val1, char op, saddr val2, char relabs1, char relabs2) ;
-void next_char(), append_extexp() ;
+static saddr reduce_E(void) ;
+static saddr reduce_T(void) ;
+static saddr reduce_F(void) ;
+static saddr reduce_B(void) ;
+static saddr reduce_X(void) ;
+static saddr reduce_P(void) ;
+static saddr dec_value(void) ;
+static saddr hex_value(void) ;
+static saddr bin_value(void) ;
+static saddr ascii_value(char) ;
+static saddr label_value(void) ;
+static saddr truncate24(saddr) ;
+static saddr apply (saddr val1, char op, saddr val2, char relabs1, char relabs2) ;
+static void next_char(void);
+static void append_extexp(char *) ;
 
 
 /******************************************************************************
@@ -78,7 +86,8 @@ note : Algorithm used is recursive descent (Mr Vermeulen would be horrified !)
 
 ******************************************************************************/
 
-saddr calc_expression (char *exp)
+saddr
+calc_expression (char *exp)
 {
     saddr val;
 
@@ -104,7 +113,8 @@ synopsis : saddr reduce_E()
 description : This function reduces a given expression starting at pexp.
 
 ******************************************************************************/
-saddr reduce_E()
+static saddr
+reduce_E(void)
 {
     saddr val1, val2;
     char op, lrelabs;
@@ -132,7 +142,8 @@ description : same as above, for T-production
 
 ******************************************************************************/
 
-saddr reduce_T ()
+static saddr
+reduce_T (void)
 {
     saddr val1, val2 ;
     char op, lrelabs ;
@@ -159,7 +170,8 @@ description : same as reduce_E
 
 ******************************************************************************/
 
-saddr reduce_F ()
+static saddr
+reduce_F (void)
 {
     saddr val1, val2;
     char op, lrelabs ;
@@ -187,7 +199,8 @@ description : reduces a boolean factor. This must be done by reduction of minus
 
 ******************************************************************************/
 
-saddr reduce_B ()
+static saddr
+reduce_B (void)
 {
     saddr val;
     char op ;
@@ -220,7 +233,8 @@ description : same as reduce_E
 
 ******************************************************************************/
 
-saddr reduce_X ()
+static saddr
+reduce_X (void)
 {
     saddr val1, val2;
     char op, lrelabs;
@@ -249,7 +263,8 @@ note : rule P -> D is implemented "in line" in this code (not as a separate
 
 ******************************************************************************/
 
-saddr reduce_P ()
+static saddr
+reduce_P (void)
 {
     saddr val ;
     char limit, line[MAXLEN] ;
@@ -352,7 +367,8 @@ note : this function doesn't check overflow. If there is, numbers are treated
 
 ******************************************************************************/
 
-saddr dec_value ()
+static saddr
+dec_value (void)
 {
     saddr val=0L ;
 
@@ -376,7 +392,8 @@ description : same as above for hexadecimal constants
 
 ******************************************************************************/
 
-saddr hex_value ()
+static saddr
+hex_value (void)
 {
     saddr i, val = 0L ;
 
@@ -404,7 +421,8 @@ description : same as above for binary constants
 
 ******************************************************************************/
 
-saddr bin_value ()
+static saddr
+bin_value (void)
 {
     saddr val = 0L ;
 
@@ -428,8 +446,8 @@ description : same as above, but the search is stopped when encoutered a '.
 
 ******************************************************************************/
 
-saddr ascii_value (limit)
-char limit ;
+static saddr
+ascii_value (char limit)
 {
     saddr val = 0 ;
 
@@ -447,15 +465,16 @@ char limit ;
                                   LABEL_VALUE
 
 
-synopsis : saddr label_value ()
+synopsis : saddr label_value (void)
 description : parses the symbol, then tries to return the value founded in the
               symbol list.
 
 ******************************************************************************/
 
-saddr label_value ()
+static saddr
+label_value (void)
 {
-    char label[LBLLEN+2], *plabel ;
+    char label[LBLLEN+2+10], *plabel ;	// +10 to cope with %ld max int
     int mx, need_par = 0, j = 0 ;
     saddr val ;
 
@@ -513,9 +532,10 @@ note : under overflow condition, numbers are truncated to 20 bits.
 
 ******************************************************************************/
 
-saddr apply (saddr val1, char op, saddr val2, char relabs1, char relabs2)
+static saddr
+apply (saddr val1, char op, saddr val2, char relabs1, char relabs2)
 {
-    saddr val ;
+    saddr val = 0 ;
 
     if (val2==EXP_ERR)                    return (EXP_ERR) ;
     if ((val1==EXP_EXT)||(val2==EXP_EXT)) return (EXP_EXT) ;
@@ -552,7 +572,7 @@ saddr apply (saddr val1, char op, saddr val2, char relabs1, char relabs2)
             if ((val1<0)||(val2<0)||((val1==0)&&(val2==0)))
             {
                 error (WRNIXP, "") ;           /* Illegal exponentiation */
-#if ASSEMLER
+#if ASSEMBLER
                 val = EXP_ERR ;
 #else
                 val = EXP_EXT ;
@@ -584,7 +604,8 @@ description : truncates 32 bits integer to 24 bits.
 
 ******************************************************************************/
 
-saddr truncate24 (saddr val)
+static saddr
+truncate24 (saddr val)
 {
     return (val & 0xffffff) ;
 }
@@ -600,7 +621,8 @@ description : stores the current character in extexp variable, and moves the
               expression pointer (pexp) forward one position.
 
 ******************************************************************************/
-void next_char ()
+static void
+next_char (void)
 {
     *pextexp = *pexp ;
     pextexp++ ;
@@ -619,7 +641,8 @@ description : append line to extexp string.
 
 ******************************************************************************/
 
-void append_extexp (char *line)
+static void
+append_extexp (char *line)
 {
     while (*line)
     {

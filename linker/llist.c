@@ -11,16 +11,16 @@
 
 #include "lglobal.h"
 
-extern void dfl_extension (), look_obj (), format_hex () ;
-
 FILE *fd_l ;
 int l_line = 0, l_page = 1 ;
 
-void l_files (), l_xref () ;
+static void l_files (void);
+static void l_xref (void);
 
 
 
-void l_init ()
+void
+l_init (void)
 {
     char dfl [MAXLEN+1] ;
 
@@ -42,7 +42,8 @@ void l_init ()
 }
 
 
-void l_new_page (int flag)
+static void
+l_new_page (int flag)
 {
     if (!cntlist) return ;
     for (; l_line<page_size; l_line++) fprintf (fd_l, "\n") ;
@@ -57,7 +58,8 @@ void l_new_page (int flag)
 }
 
 
-void l_flush ()
+void
+l_flush (void)
 {
     if (!cntlist) return ;
     l_new_page (0) ;
@@ -66,7 +68,8 @@ void l_flush ()
 }
 
 
-void l_print (char *line)
+void
+l_print (char *line)
 {
     if (!cntlist)
     {
@@ -81,7 +84,8 @@ void l_print (char *line)
 }
 
 
-void report ()
+void
+report (void)
 {
     if (cntlist && errnb) l_new_page (1) ;
     if (xref) l_xref () ;
@@ -95,9 +99,10 @@ void report ()
 }
 
 
-void l_files ()
+static void
+l_files (void)
 {
-    char line[MAXLEN+1], start[MAXLEN+1], end[MAXLEN+1], length[MAXLEN+1] ;
+    char line[MAXLEN+1], start[5+1], end[5+1], length[5+1] ;
     int i ;
     saddr val ;
 
@@ -131,7 +136,8 @@ void l_files ()
 }
 
 
-void l_xref ()
+static void
+l_xref (void)
 {
     char line [MAXLEN+1], tmp [MAXLEN+1], rel [MAXLEN+1] ;
     char format [MAXLEN+1], xformat [MAXLEN+1] ;

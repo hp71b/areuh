@@ -23,11 +23,10 @@
 #include "lglobal.h"
 #endif
 
-extern struct symbol *add_label() ;
-
 #if HPUX
 
-void format_time (char *str)
+void
+format_time (char *str)
 {
     long int l ;
 
@@ -47,8 +46,8 @@ char *tab[] = { "",
 		"/local/lib/",
 		0 } ;
 
-void load_file (file)
-char *file ;
+void
+load_file (char *file)
 {
     int i = 0 ;
     char name [MAXLEN+1] ;
@@ -86,7 +85,8 @@ char *file ;
  *   if exists and not directory, ok
  *   if exists and directory, then append "<dir>/<default>" */
 
-void look_obj (char *fname, char *dfl)
+void
+look_obj (char *fname, char *dfl)
 {
     struct stat buf ;
 
@@ -104,7 +104,8 @@ void look_obj (char *fname, char *dfl)
  * default extension.
  */
 
-void dfl_extension (char *object, char *source, char *extension)
+void
+dfl_extension (char *object, char *source, char *extension)
 {
     char *pname ;
 
@@ -122,8 +123,8 @@ void dfl_extension (char *object, char *source, char *extension)
 
 char skipvar ;
 
-void format_time (str)
-char *str ;
+void
+format_time (char *str)
 {
     strcpy (str, "Areuh Tagada Bouzouh bouzouh areuh areuh... et toc !") ;
 }
@@ -131,9 +132,8 @@ char *str ;
 char *optarg ;
 int optind = 0, opterr = 0 ;
 
-int getopt (argc, argv, optstr)
-int argc ;
-char *argv[], *optstr ;
+int
+getopt (int argc, char *argv[], char *optstr)
 {
     char *o, car ;
     static char *index = 0 ;
@@ -163,8 +163,8 @@ char *tab[] = { "",
 		"A:\\TABLE\\",
 		0 } ;
 
-void load_file (file)
-char *file ;
+void
+load_file (char *file)
 {
     int i = 0 ;
     char name [MAXLEN+1] ;
@@ -200,8 +200,8 @@ char *file ;
 
 char skipvar ;
 
-void format_time (str)
-char *str ;
+void
+format_time (char *str)
 {
     long int l ;
 
@@ -216,9 +216,8 @@ char *str ;
 char *optarg ;
 int optind = 0, opterr = 0 ;
 
-int getopt (argc, argv, optstr)
-int argc ;
-char *argv[], *optstr ;
+int
+getopt (int argc, char *argv[], char *optstr)
 {
     char *o, car ;
     static char *index = 0 ;
@@ -251,8 +250,8 @@ char *tab[] = { "",
 		"c:\\areuh\\lib\\",
 		0 } ;
 
-void load_file (file)
-char *file ;
+void
+load_file (char *file)
 {
     int i = 0 ;
     char name [MAXLEN+1] ;
@@ -289,8 +288,8 @@ char *file ;
  *   if exists and not directory, ok
  *   if exists and directory, then append "<dir>/<default>" */
 
-look_obj (fname, dfl)
-char *fname, *dfl ;
+int
+look_obj (char *fname, char *dfl)
 {
     struct stat buf ;
 
@@ -308,8 +307,8 @@ char *fname, *dfl ;
  * default extension.
  */
 
-dfl_extension (object, source, extension)
-char *object, *source, *extension ;
+int
+dfl_extension (char *object, char *source, char *extension)
 {
     char *pname ;
 
@@ -324,7 +323,8 @@ char *object, *source, *extension ;
 
 #if MACOS
 
-void format_time (char *str)
+void
+format_time (char *str)
 {
     long int l ;
 
@@ -337,11 +337,11 @@ void format_time (char *str)
 }
 
 char *tab[] = { "",
-		"/usr/local/lib/",
+		"/usr/local/share/",
 		0 } ;
 
-void load_file (file)
-char *file ;
+void
+load_file (char *file)
 {
     int i = 0 ;
     char name [MAXLEN+1] ;
@@ -379,7 +379,8 @@ char *file ;
  *   if exists and not directory, ok
  *   if exists and directory, then append "<dir>/<default>" */
 
-void look_obj (char *fname, char *dfl)
+void
+look_obj (char *fname, char *dfl)
 {
     struct stat buf ;
 
@@ -397,7 +398,8 @@ void look_obj (char *fname, char *dfl)
  * default extension.
  */
 
-void dfl_extension (char *object, char *source, char *extension)
+void
+dfl_extension (char *object, char *source, char *extension)
 {
     char *pname ;
 
@@ -412,7 +414,8 @@ void dfl_extension (char *object, char *source, char *extension)
 
 #if FREEBSD
 
-void format_time (char *str)
+void
+format_time (char *str)
 {
     long int l ;
 
@@ -432,8 +435,8 @@ char *tab[] = { "",
 		"/local/lib/",
 		0 } ;
 
-void load_file (file)
-char *file ;
+void
+load_file (char *file)
 {
     int i = 0 ;
     char name [MAXLEN+1] ;
@@ -471,7 +474,8 @@ char *file ;
  *   if exists and not directory, ok
  *   if exists and directory, then append "<dir>/<default>" */
 
-void look_obj (char *fname, char *dfl)
+void
+look_obj (char *fname, char *dfl)
 {
     struct stat buf ;
 
@@ -489,7 +493,8 @@ void look_obj (char *fname, char *dfl)
  * default extension.
  */
 
-void dfl_extension (char *object, char *source, char *extension)
+void
+dfl_extension (char *object, char *source, char *extension)
 {
     char *pname ;
 

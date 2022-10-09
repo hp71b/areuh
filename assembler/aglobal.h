@@ -120,3 +120,109 @@ extern int exec, in_if, in_else ;         /* conditionnal assembly */
 extern char *xlabel ;                     /* label synonym */
 extern char extexp[] ;                    /* external expression */
 extern int modular ;                      /* 0 if LEX encoutered */
+
+/******************************************************************************
+  FUNCTIONS
+******************************************************************************/
+
+// aerror.c
+extern void error(int errnb, char *msg);
+
+// ainput.c
+extern int read_line(FILE *fd, char line[]) ;
+extern void parse_line(char *line, char *label, char *mnemo, char *modif);
+
+// alabel.c
+extern void s_init(void) ;
+extern void ps_label (char *label, char *mnemo, char *modif);
+extern struct symbol *add_label(char *label, saddr val, char *exp, char type, char os);
+extern saddr symbol_value(char *label) ;
+
+// alist.c
+extern void l_flush(void) ;
+extern void l_init(void) ;
+extern void l_new_page(int flag) ;
+extern void l_print (saddr address, char *code, char *msg, int flags);
+
+// amain.c
+
+// amnemo.c
+extern void ps_mnemo (char *line, char *modif, struct mnemo_desc *ad);
+extern struct mnemo_desc *find_mnemo(char *mnemo) ;
+extern char hex (int digit);
+extern int dec (char digit);
+
+// aobj.c
+extern void o_init(void) ;
+extern void o_print(char *str, int len) ;
+extern void dump_linker_infos (void) ;
+
+// aopc1.c
+extern void regarith (struct mnemo_desc *ad, char *modif);
+extern void reglogic (char *modif);
+extern void regtest(struct mnemo_desc *ad, char *modif);
+extern void branches (struct mnemo_desc *ad, char *modif);
+extern void ptrtest (char *modif);
+extern void rtnyes(void) ;
+extern void stattest (char *modif);
+extern void setptr (char *modif);
+extern void setstat (char *modif);
+extern void dparith (char *modif);
+extern void datatrans (char *modif);
+extern void nibhex (char *modif);
+extern void lchex (char *modif);
+extern void dxhex (char *modif);
+extern int ascii_len (char *modif);
+extern void nibasc (char *modif);
+extern void lcasc (char *modif);
+
+// aopc2.c
+extern void bss (char *modif);
+extern void eject (void);
+extern void endx (void);
+extern void list (char *modif);
+extern void title (char *modif);
+extern void stitle (char *modif);
+extern void lex (char *modif, char *line);
+extern void id (char *modif, char *line);
+extern void msg (char *modif, char *line);
+extern void poll (char *modif, char *line);
+extern void entryx (char *modif, char *line);
+extern void charx (char *modif, char *line);
+extern void key (char *modif, char *line);
+extern void token (char *modif, char *line);
+extern void bin (char *modif, char *line);
+extern void chain (char *modif, char *line);
+extern void endtxt (char *line);
+extern void endifx (void);
+extern void rdsymb (char *modif);
+extern void elsex (void);
+extern void ifx (char *modif);
+
+// apass.c
+extern void pass(void) ;
+extern void ps_line (char *line);
+
+// areport.c
+extern void print_ref(void) ;
+
+// autil.c
+extern void init(void) ;
+extern void between(void) ;
+extern void term(void) ;
+extern char *memoire(int size) ;
+extern void uprc (char *str) ;
+extern void format_hex (char *str, saddr val, int dig);
+
+// exp.c
+extern saddr calc_expression(char *exp) ;
+
+// mdep.c
+extern void look_obj (char *fname, char *dfl);
+extern void dfl_extension (char* obj, char *src, char *ext) ;
+extern void format_time (char *str) ;
+extern void load_file (char *file) ;
+
+// tabgrp.c
+
+// tabopc.c

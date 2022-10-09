@@ -21,14 +21,7 @@
 #include "aglobal.h"
 #include "agen.h"
 
-extern void format_hex (char *, saddr, int) ;
-
 #define UPRC(c)   ((((c)>='a')&&((c)<='z')) ? (c)-32 : (c))
-
-extern char *memoire() ;
-extern saddr calc_expression () ;
-extern char hex () ;
-
 
 /******************************************************************************
 
@@ -44,7 +37,8 @@ description : adds the parameters about the use of an expression containing
 
 ******************************************************************************/
 
-void add_xused (int type, saddr addr, int len, char*exp)
+static void
+add_xused (int type, saddr addr, int len, char*exp)
 {
     struct xused *xu ;
 
@@ -73,7 +67,8 @@ description : to be described, in a (far) future...
 
 ******************************************************************************/
 
-int field_select (char *modif)
+static int
+field_select (char *modif)
 {
     int r = 0 ;
     char c ;
@@ -117,8 +112,8 @@ int field_select (char *modif)
     return (r) ;
 }
 
-
-void regtest(struct mnemo_desc *ad, char *modif)
+void
+regtest(struct mnemo_desc *ad, char *modif)
 {
     int r ;
 
@@ -138,7 +133,8 @@ void regtest(struct mnemo_desc *ad, char *modif)
 }
 
 
-void regarith (struct mnemo_desc *ad, char *modif)
+void
+regarith (struct mnemo_desc *ad, char *modif)
 {
     int r ;
 
@@ -166,7 +162,8 @@ void regarith (struct mnemo_desc *ad, char *modif)
 }
 
 
-void reglogic (char *modif)
+void
+reglogic (char *modif)
 {
     int r ;
 
@@ -176,7 +173,8 @@ void reglogic (char *modif)
 }
 
 
-int range (saddr org, saddr dest, int nibs, saddr *offset)
+static int
+range (saddr org, saddr dest, int nibs, saddr *offset)
 {
     saddr Sixtine, Fiftine ;
     int r ;
@@ -190,7 +188,8 @@ int range (saddr org, saddr dest, int nibs, saddr *offset)
 }
 
 
-void branches (struct mnemo_desc *ad, char *modif)
+void
+branches (struct mnemo_desc *ad, char *modif)
 {
     saddr val, offset, pc_bis ;
     int fits, i, j ;
@@ -254,13 +253,15 @@ void branches (struct mnemo_desc *ad, char *modif)
 }
 
 
-void rtnyes()
+void
+rtnyes (void)
 {
     if (!(prev_test))  error (WRNTST, "") ;   /* needs previous test instr. */
 }
 
 
-void ptrtest (char *modif)
+void
+ptrtest (char *modif)
 {
     saddr val ;
 
@@ -278,7 +279,8 @@ void ptrtest (char *modif)
 }
 
 
-void stattest (char *modif)
+void
+stattest (char *modif)
 {
     saddr val ;
 
@@ -296,7 +298,8 @@ void stattest (char *modif)
 }
 
 
-void setptr (char *modif)
+void
+setptr (char *modif)
 {
     saddr val ;
 
@@ -314,7 +317,8 @@ void setptr (char *modif)
 }
 
 
-void setstat (char *modif)
+void
+setstat (char *modif)
 {
     saddr val ;
 
@@ -332,7 +336,8 @@ void setstat (char *modif)
 }
 
 
-void dparith (char *modif)
+void
+dparith (char *modif)
 {
     saddr val ;
 
@@ -355,7 +360,8 @@ void dparith (char *modif)
 }
 
 
-void datatrans (char *modif)
+void
+datatrans (char *modif)
 {
     saddr val ;
     int r ;
@@ -408,7 +414,8 @@ void datatrans (char *modif)
 }
 
 
-int hex_len (char *modif)	  /* aCLCHX : AS5 : ED094 */
+static int
+hex_len (char *modif)	  /* aCLCHX : AS5 : ED094 */
 {
     int i = 0 ;
 
@@ -424,7 +431,8 @@ int hex_len (char *modif)	  /* aCLCHX : AS5 : ED094 */
 }
 
 
-void check_last_hex (char digit)
+static void
+check_last_hex (char digit)
 {
     if ((digit!=EOL)&&(digit!='\t')&&(digit!=' '))
     {
@@ -438,7 +446,8 @@ void check_last_hex (char digit)
 }
 
 
-void nibhex (char *modif)
+void
+nibhex (char *modif)
 {
     int i ;
 
@@ -457,7 +466,8 @@ void nibhex (char *modif)
 }
 
 
-void lchex (char *modif)
+void
+lchex (char *modif)
 {
     int i, j ;
 
@@ -487,7 +497,8 @@ void lchex (char *modif)
 }
 
 
-void dxhex (char *modif)
+void
+dxhex (char *modif)
 {
     int i, j, r ;
 
@@ -515,7 +526,8 @@ void dxhex (char *modif)
 }
 
 
-int ascii_len (char *modif)
+int
+ascii_len (char *modif)
 {
     char limit ;
     int i = 0 ;
@@ -536,7 +548,8 @@ int ascii_len (char *modif)
 }
 
 
-void nibasc (char *modif)
+void
+nibasc (char *modif)
 {
     char limit ;
     int i ;
@@ -570,7 +583,8 @@ void nibasc (char *modif)
 }
 
 
-void lcasc (char *modif)
+void
+lcasc (char *modif)
 {
     char limit ;
     int i ;

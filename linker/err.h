@@ -123,5 +123,3 @@
 
 #define WRNIIF  50                                       /* A */
     /* invalid conditional structure */
-
-extern void error() ;

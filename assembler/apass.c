@@ -23,15 +23,6 @@ pass
 #include "aglobal.h"
 #include "agen.h"
 
-extern struct mnemo_desc *find_mnemo() ;
-extern int read_line();
-extern void parse_line(), ps_label(), process_mnemo(),
-	    l_new_page(), l_print(), o_print() ;
-extern struct symbol *add_label() ;
-extern void ps_mnemo() ;
-
-void ps_line() ;
-
 
 /******************************************************************************
 
@@ -43,7 +34,8 @@ description :
 
 ******************************************************************************/
 
-void pass()
+void
+pass(void)
 {
     char line[MAXLEN+1];
     int c;
@@ -82,7 +74,8 @@ description : parses the line read from the input (breaks the line into three
 
 ******************************************************************************/
 
-void ps_line (char *line)
+void
+ps_line (char *line)
 {
     char label[LBLLEN+2], mnemo[7], modif[MAXLEN+1] ;
     struct mnemo_desc *ad ;

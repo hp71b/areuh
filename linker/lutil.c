@@ -11,10 +11,6 @@
 
 #include "lglobal.h"
 
-extern saddr calc_expression () ;
-void format_hex () ;
-char *memoire () ;
-
 /******************************************************************************
 
 				  FIND_LABEL
@@ -25,7 +21,8 @@ description : find address of label, return address of structure describing it.
 
 ******************************************************************************/
 
-struct symbol *find_label (char *label)
+static struct symbol *
+find_label (char *label)
 {
     struct symbol *p ;
     int test ;
@@ -56,7 +53,8 @@ description : add a label in label table and, if already defined, add it to
 
 ******************************************************************************/
 
-void add_label (char *label, saddr val, int os)
+void
+add_label (char *label, saddr val, int os)
 {
     char error_text [MAXLEN+1] ;
     struct symbol *p, *s ;
@@ -109,7 +107,8 @@ description : during first part of pass one, if a label is undefined, add it
 
 ******************************************************************************/
 
-void add_unres (char *label, char *def)
+void
+add_unres (char *label, char *def)
 {
     struct unres *x ;
 
@@ -136,12 +135,15 @@ description : read an entry in third part of object file fp.
 
 ******************************************************************************/
 
-void read_usage (int *characteristic, char *def, FILE *fp)
+void
+read_usage (int *characteristic, char *def, FILE *fp)
 {
     int i ;
 
-    fread (characteristic, sizeof (long int), 1, fp) ;
-    fread (&pc, sizeof (saddr), 1, fp) ;
+    if (fread (characteristic, sizeof (int), 1, fp) != 1)
+	error (ERRRD, fname[file]);
+    if (fread (&pc, sizeof (saddr), 1, fp) != 1)
+	error (ERRRD, fname[file]);
     i = 0 ;
     while ((def [i] = (char) fgetc (fp)) != '\n') i++ ;
     def [i] = EOL ;
@@ -149,7 +151,8 @@ void read_usage (int *characteristic, char *def, FILE *fp)
 }
 
 
-int lrange (saddr *offset, int nibs)
+static int
+lrange (saddr *offset, int nibs)
 {
     saddr Sixtine, Fiftine ;
     int r ;
@@ -177,10 +180,11 @@ description : make all the work which is to be made by a linker. Resolve
 
 ******************************************************************************/
 
-void resolve_usage (saddr characteristic, char *def, char *code)
+void
+resolve_usage (saddr characteristic, char *def, char *code)
 {
     char hexa [MAXLEN+1] ;
-    saddr type, source, dest, offset ;
+    saddr type, source = 0, dest, offset ;
     int i, j ;
 
     type = characteristic & (XABSL | XABSO | XRGTO | XRGSB) ;
@@ -234,7 +238,8 @@ description : fetch a label, and return its value.
 
 ******************************************************************************/
 
-saddr symbol_value (char *label)
+saddr
+symbol_value (char *label)
 {
     struct symbol *ad ;
     struct xtable *x, *y, *z ;
@@ -273,7 +278,8 @@ description : get memory from heap using malloc. It is just a layer above
 
 ******************************************************************************/
 
-char *memoire (int size)
+char *
+memoire (int size)
 {
     char *x ;
 
@@ -297,7 +303,8 @@ description : stores into str the hexadecimal string representing the dig
 
 ******************************************************************************/
 
-void format_hex (char *str, saddr val, int dig)
+void
+format_hex (char *str, saddr val, int dig)
 {
     register int i, h ;
 

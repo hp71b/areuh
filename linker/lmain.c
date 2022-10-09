@@ -11,8 +11,6 @@
 
 #include "lglobal.h"
 
-extern void init (), pass1 (), between (), pass2 (), term () ;
-
 saddr pc ;
 int nfile, file ;
 char flex [MAXLEN+1], flisting [MAXLEN+1] ;
@@ -25,10 +23,12 @@ char *fname[MAXMOD+2] ;
 int page_size, cntlist, xref, passnb, errnb ;
 int passbis = 0 ;
 
-void prompt (), read_line (), make_name () ;
-extern char *memoire () ;
+static void prompt (void) ;
+static void read_line (FILE *, char *) ;
+static void make_name (int, char *) ;
 
-int main (int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
     int r = 0, c, i ;
     int errflg = 0 ;
@@ -108,7 +108,8 @@ description : if "-p" option is used, or if no parameters are passed to "ald",
 
 ******************************************************************************/
 
-void prompt ()
+static void
+prompt (void)
 {
     char line [MAXLEN+1] ;
 
@@ -145,7 +146,8 @@ void prompt ()
     }
 }
 
-void read_line (FILE *fp, char *line)
+static void
+read_line (FILE *fp, char *line)
 {
     int c, i = -1 ;
 
@@ -172,7 +174,8 @@ description : parse file name, and store file name with proper extension in
 
 ******************************************************************************/
 
-void make_name (int i, char *file)
+static void
+make_name (int i, char *file)
 {
     char *pfile ;
 

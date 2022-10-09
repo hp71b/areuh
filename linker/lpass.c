@@ -11,11 +11,13 @@
 
 #include "lglobal.h"
 
-extern void add_label (), add_unres (), read_usage (), resolve_usage () ;
-extern long int calc_expression () ;
-extern char *memoire () ;
+static void pass1_bis (void) ;
+static void ps_part12 (void) ;
 
-void pass1_bis (), ps_part12 () ;
+#define fgetl(lg,fp,f) do { \
+			if (fread(&(lg),sizeof(long int),1,(fp)) != 1) \
+			    error(ERRRD,(f)); \
+		     } while(0)
 
 /******************************************************************************
 
@@ -28,7 +30,8 @@ description : processes the first pass on the object files. Open each file,
 
 ******************************************************************************/
 
-void pass1 ()
+void
+pass1 (void)
 {
     tmodule [1].m_ad = (saddr) 0 ;
     for (file=1; file<=nfile; file++)	ps_part12 () ;
@@ -51,7 +54,8 @@ description : in first pass, process parts one and two of an object file, and
 
 ******************************************************************************/
 
-void ps_part12 ()
+static void
+ps_part12 (void)
 {
     FILE *fp ;
     char label [LBLLEN+2], def [MAXLEN+1], type ;
@@ -61,19 +65,19 @@ void ps_part12 ()
 
     if (!(fp = fopen (fname[file], RAO_MODE)))
 	error (ERROPN, fname[file]) ;	  /* error opening file */
-    fgetl (magic, fp) ;
+    fgetl (magic, fp, fname[file]) ;
     if ((magic<AOF_MAGIC)||(magic>AO_MAGIC))
 	error (ERRNOA, fname[file]) ;	  /* not output of aas */
     if (magic!=AO_MAGIC)
 	error (ERRICV, fname[file]) ;	  /* incompatible version */
 
-    fgetl (part2, fp) ;
-    fgetl (size, fp) ;			   /* length of code */
+    fgetl (part2, fp, fname[file]) ;
+    fgetl (size, fp, fname[file]) ;			   /* length of code */
     tmodule[file+1].m_ad = tmodule[file].m_ad + size ;
 
     fseek (fp, part2, 0) ;
-    fgetl (tmodule[file].m_part3, fp) ;
-    fgetl (nl, fp) ;
+    fgetl (tmodule[file].m_part3, fp, fname[file]) ;
+    fgetl (nl, fp, fname[file]) ;
 
     if (ferror (fp)) error (ERRRD, fname [file]) ;
 
@@ -82,7 +86,7 @@ void ps_part12 ()
 	k = 0 ;
 	while ((label [k] = (char) fgetc (fp)) != '\n') k++ ;
 	label [k] = EOL ;
-	fgetl (val, fp) ;
+	fgetl (val, fp, fname[file]) ;
 	if (ferror (fp)) error (ERRRD, fname [file]) ;
 	if (val<0L)
 	{
@@ -125,7 +129,8 @@ description : at the end of first pass, if still undefined labels, try to
 
 ******************************************************************************/
 
-void pass1_bis ()
+static void
+pass1_bis (void)
 {
     struct unres *xdef ;
     saddr val ;
@@ -163,25 +168,28 @@ description : during pass two, we open each file, we read the code into a
 
 ******************************************************************************/
 
-void pass2 ()
+void
+pass2 (void)
 {
     FILE *fp ;
     char def [MAXLEN+1], *code ;
     int j ;
-    long int size, bidon, nu, characteristic ;
+    long int size, bidon, nu;
+    int characteristic ;
 
     for (file=1; file<=nfile; file++)
     {
 	fp = fopen (fname[file], RAO_MODE) ;
 	if (!fp) error (ERROPN, fname[file]) ;
-	fgetl (bidon, fp) ;
-	fgetl (bidon, fp) ;
-	fgetl (size, fp) ;
+	fgetl (bidon, fp, fname[file]) ;
+	fgetl (bidon, fp, fname[file]) ;
+	fgetl (size, fp, fname[file]) ;
 	code = memoire (size) ;
-	fread ((char *) code, (int) size, 1, fp) ;
+	if (fread ((char *) code, (int) size, 1, fp) != 1)
+	    error (ERRRD, fname[file]) ;
 
 	fseek (fp, tmodule[file].m_part3, 0) ;
-	fgetl (nu, fp) ;
+	fgetl (nu, fp, fname[file]) ;
 
 	if (ferror (fp)) error (ERRRD, fname [file]) ;
 

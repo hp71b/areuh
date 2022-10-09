@@ -22,15 +22,6 @@ ps_mnemo, find_mnemo, hex, dec
 
 #include "aglobal.h"
 
-extern void regtest(), regarith(), reglogic(), branches(), rtnyes(), ptrtest(),
-            stattest(), setptr(), setstat(), dparith(), datatrans(), nibhex(),
-            lchex(), dxhex(), nibasc(), lcasc(),
-
-            bss(), eject(), endx(), list(), title(), stitle(), lex(), id(),
-            msg(), poll(), entryx(), charx(), key(), token(), bin(), chain(),
-            endtxt(), endifx(), rdsymb(), elsex(), ifx() ;
-
-
 /******************************************************************************
 
                                  PROCESS_MNEMO
@@ -43,7 +34,8 @@ description : pass control to the appropriate routine, to process the opcode.
 
 ******************************************************************************/
 
-void ps_mnemo (char *line, char *modif, struct mnemo_desc *ad)
+void
+ps_mnemo (char *line, char *modif, struct mnemo_desc *ad)
 {
     switch (ad->m_class)
     {
@@ -177,7 +169,8 @@ description : finds index of a mnemonic in mnemo_table, and returns it, -1
 
 ******************************************************************************/
 
-struct mnemo_desc *find_mnemo (char * mnemo)
+struct mnemo_desc *
+find_mnemo (char * mnemo)
 {
     int i, m, b = 1 ;
     long int h = 0 ;
@@ -207,7 +200,8 @@ description : returns the hexadecimal representation of integer 'digit' (in
 
 ******************************************************************************/
 
-char hex (int digit)
+char
+hex (int digit)
 {
     return ((char) ( (digit<=9) ? digit+48 : digit+55) ) ;
 }
@@ -224,7 +218,8 @@ description : returns the decimal equivalent of hexadecimal character 'digit'.
 
 *****************************************************************************/
 
-int dec (char digit)
+int
+dec (char digit)
 {
     return ((digit<'A') ? (int) digit - 48 : (int) digit - 55 ) ;
 }

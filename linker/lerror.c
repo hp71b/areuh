@@ -23,8 +23,6 @@ error
 
 #include "lglobal.h"
 
-extern void l_print (), format_hex () ;
-
 /******************************************************************************
 
                                      ERROR
@@ -38,9 +36,10 @@ descritpion : reports an error message on listing file, if any, else on
 
 ******************************************************************************/
 
-void error (int errno, char *msg)
+void
+error (int errno, char *msg)
 {
-    char txt[MAXLEN+1], tmp[MAXLEN+1];
+    char txt[MAXLEN+1+50], tmp[MAXLEN+1];
 
     switch (errno)
     {

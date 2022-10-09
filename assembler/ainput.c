@@ -23,8 +23,8 @@ read_line, parse_line, next_token, stcp
 
 #include "aglobal.h"
 
-int next_token (char *line, int i) ;
-int stcp (char *str1, char *str2, int i, int lmax) ;
+static int next_token (char *line, int i) ;
+static int stcp (char *str1, char *str2, int i, int lmax) ;
 
 /******************************************************************************
 
@@ -39,7 +39,8 @@ note : read_line returns -1 if EOF reached, 0 otherwise.
 
 ******************************************************************************/
 
-int read_line (FILE *fd, char line[])
+int
+read_line (FILE *fd, char line[])
 {
     int c, i = -1 ;
 
@@ -78,7 +79,8 @@ note : parse_line doesn't return a result, the line is always valid.
 
 ******************************************************************************/
 
-void parse_line(char *line, char *label, char *mnemo, char *modif)
+void
+parse_line(char *line, char *label, char *mnemo, char *modif)
 {
     int i=0, j ;
 
@@ -132,7 +134,8 @@ descrption : next_token looks the line, from the i-th position, for the next
 
 ******************************************************************************/
 
-int next_token (char *line, int i)
+static int
+next_token (char *line, int i)
 {
     while ((line[i]!=EOL)&&((line[i]==' ')||(line[i]=='\t'))) i++ ;
     return ((line[i]) ? i : -1);
@@ -158,7 +161,8 @@ replace with "strncpy" in C library for future releases
 
 ******************************************************************************/
 
-int stcp (char *str1, char *str2, int i, int lmax)
+static int
+stcp (char *str1, char *str2, int i, int lmax)
 {
     int j=0;
     do

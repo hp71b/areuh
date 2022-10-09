@@ -22,15 +22,10 @@ l_init, l_flush, l_print, l_new_page, l_line, l_page
 
 #include "aglobal.h"
 
-extern void dfl_extension () ;
-extern void look_obj () ;
-extern void format_hex () ;
-
 int l_line, l_page ;
-void l_new_page (), l_page_header () ;
-
 char fstdout [] = "stdout" ;
 
+static void l_page_header (void);
 
 /******************************************************************************
 
@@ -42,7 +37,8 @@ description : initiates the listing mechanism, if necessary.
 
 ******************************************************************************/
 
-void l_init()
+void
+l_init(void)
 {
     char tmp [MAXLEN+1] ;
 
@@ -75,7 +71,8 @@ description : forces a new page, then closes the listing file if necessary.
 
 ******************************************************************************/
 
-void l_flush()
+void
+l_flush(void)
 {
     if (cntlist==0)	return ;
     l_new_page(0) ;
@@ -107,7 +104,8 @@ description : prints a line on the listing file.
 
 ******************************************************************************/
 
-void l_print (saddr address, char *code, char *msg, int flags)
+void
+l_print (saddr address, char *code, char *msg, int flags)
 {
     char line[MAXLEN+1], tmp[MAXLEN+1] ;
 
@@ -169,7 +167,8 @@ description : forces a new page on listing file, and if flag # 0, prints a
 
 ******************************************************************************/
 
-void l_new_page (int flag)
+void
+l_new_page (int flag)
 {
     if (!(cntlist)) return ;
 
@@ -181,7 +180,8 @@ void l_new_page (int flag)
 }
 
 
-void l_page_header ()
+static void
+l_page_header (void)
 {
     fprintf (fd_l, "Page %03d           %.60s\n", ++l_page, l_title) ;
     fprintf (fd_l, "AREUH ASS. V2.4    %.60s\n", l_stitle) ;

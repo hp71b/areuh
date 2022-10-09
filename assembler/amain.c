@@ -24,7 +24,7 @@ main, prompt
 
 #include "aglobal.h"
 
-void prompt () ;
+static void prompt () ;
 
 struct symbol *h_label[256] ;
 
@@ -52,10 +52,6 @@ int exec, in_if, in_else ;
 int modular, linker ;
 
 
-extern void init(), between(), term(), pass() ;
-extern int read_line() ;
-
-
 /******************************************************************************
 
                                      MAIN
@@ -76,7 +72,8 @@ description : Aas is a cross assembler which runs on UNIX based machines.
 
 ******************************************************************************/
 
-int main (int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
     int  r = 0, c, i ;
     int errflg = 0 ;
@@ -174,7 +171,8 @@ description : if "-p" option is used, prompts the user for files to be used.
 
 ******************************************************************************/
 
-void prompt ()
+static void
+prompt ()
 {
     char line[MAXLEN+1] ;
 

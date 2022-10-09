@@ -43,13 +43,13 @@ typedef short int token ;	    /* token = (type, value)  */
 
 /* ascii representations of messages / building blocks */
 
-char mftab[17][MSGLEN+1] ;	    /* mainframe building blocks */
-char bbtab[BBMAX][MSGLEN+1] ;	    /* local building blocks table */
-char mgtab[MGMAX][MSGLEN+1] ;	    /* message table */
+char mftab[17][MAXLEN+1] ;	    /* mainframe building blocks */
+char bbtab[BBMAX][MAXLEN+1] ;	    /* local building blocks table */
+char mgtab[MGMAX][MAXLEN+1] ;	    /* message table */
 
 /* tokenised representations for local messages / building blocks */
-token bbtok[BBMAX][MSGLEN+1] ;	    /* local building blocks */
-token mgtok[MGMAX][MSGLEN+1] ;	    /* messages */
+token bbtok[BBMAX][MAXLEN+1] ;	    /* local building blocks */
+token mgtok[MGMAX][MAXLEN+1] ;	    /* messages */
 
 /* length of local messages / building blocks */
 short int bblen[BBMAX] ;
@@ -73,26 +73,27 @@ int ind16 ;			    /* msg # whose length is 16, 32, 48... */
 #define INMG 0x100		    /* msg in mgtab */
 #define INBB 0x200		    /* msg in bbtab */
 
-token read_block () ;
-
-void init (),
-     pass1 (),
-     between (),
-     pass2 (),
-     terminator (),
-     header (),
-     output_ascii (),
-     print_msg (),
-     build () ;
-
-int erreur (), find_block () ;
+static token read_block (void) ;
+static void init (void) ;
+static void pass1 (void) ;
+static void between (void) ;
+static void pass2 (void) ;
+static void terminator () ;
+static void header () ;
+static void output_ascii () ;
+static void build () ;
+static int read_line (void);
+static void print_msg (char tab [][MAXLEN+1], token tok [][MAXLEN+1], short int len [], int ind);
+static int erreur (int) ;
+static int find_block (char *areuh, char tab[][MAXLEN+1], int imax);
 
 /******************************************************************************
 				     MAIN
 
 purpose : main program. see called procedures for information.
 ******************************************************************************/
-int main (int argc, char *argv [])
+int
+main (int argc, char *argv [])
 {
     if (argc>2) erreur(ERRUSA) ;
     else if (argc==2) mbase = atoi(argv[1]) ;
@@ -110,7 +111,8 @@ int main (int argc, char *argv [])
 
 purpose : initializes "mainframe building blocks" list.
 ******************************************************************************/
-void init ()
+static void
+init (void)
 {
     strcpy (mftab [0], "Illegal ") ;
     strcpy (mftab [1], " Expected") ;
@@ -139,7 +141,8 @@ synopsis : int read_line ()
 description : reads a line from stdin
 note : returns -1 if EOF reached, 0 otherwise
 ******************************************************************************/
-int read_line ()
+static int
+read_line (void)
 {
     int c, i = -1 ;
 
@@ -160,7 +163,8 @@ int read_line ()
 
 purpose : scans the line, isolate the label if exits, otherwise generates it.
 ******************************************************************************/
-void build_label ()
+static void
+build_label (void)
 {
     int i = 0 ;
 
@@ -183,7 +187,8 @@ synopsis : get_code ()
 purpose : parses a number if possible (three digits < 256), and modify input
   line and its pointer (line/pline). If not possible, returns pline unchanged.
 ******************************************************************************/
-void get_code ()
+static void
+get_code (void)
 {
     register char *pp ;
     register int code ;
@@ -208,7 +213,8 @@ synopsis : pass1 ()
 purpose : reads stdin and, for each line, parses it, creates local building
   blocks if any, and tokenises the message.
 ******************************************************************************/
-void pass1 ()
+static void
+pass1 (void)
 {
     int itok, ncar, iascii ;
     token bb ;
@@ -255,6 +261,8 @@ void pass1 ()
 		    if (*pline==EOL) break ;
 		    if ((*pline=='0')||(*pline=='1')||(*pline=='2'))
 			get_code () ;
+		    // comment added for gcc:
+		    // FALLTHRU
 		default :
 		    if (ncar == 0 ) mglen[mdep] ++ ;
 		    ncar++ ;
@@ -285,7 +293,8 @@ synopsis : token read_block ()
 purpose : reads a block in input line, finds it if already defined. Otherwise
   stores it in block tables. Returns a complete token.
 ******************************************************************************/
-token read_block ()
+token
+read_block (void)
 {
     int iascii = 0 ;
     int ncar = 0 ;
@@ -332,12 +341,13 @@ token read_block ()
 
 synopsis : int find_block (areuh, tab, imax)
 	   char *areuh ;
-	   char tab [][MSGLEN+1] ;
+	   char tab [][MAXLEN+1] ;
 	   int imax ;
 purpose : searches in table tab (mainframe / local building blocks) for 
   areuh building block. If found, return its index, otherwise -1.
 ******************************************************************************/
-int find_block (char *areuh, char tab[][MAXLEN+1], int imax)
+static int
+find_block (char *areuh, char tab[][MAXLEN+1], int imax)
 {
     int i ;
 
@@ -356,7 +366,8 @@ synopsis : int find_16 (xxlen, dep)
 description : returns the index of a message whose length is a multiple of 16,
   otherwise -1.
 ******************************************************************************/
-int find_16 (short int xxlen [], int dep)
+static int
+find_16 (short int xxlen [], int dep)
 {
     int i = 0 ;
 
@@ -375,7 +386,8 @@ purpose : find a message length multiple of 16. If no one, then disp an error
   message and build a comment.
   Caclulate base for building blocks.
 ******************************************************************************/
-void between ()
+static void
+between (void)
 {
     ind16 = find_16 (mglen, mdep) ;
     if (ind16>=0)
@@ -412,7 +424,8 @@ void between ()
 synopsis : pass2 ()
 purpose : sends output to stdout.
 ******************************************************************************/
-void pass2 ()
+static void
+pass2 (void)
 {
     int index ;
 
@@ -452,14 +465,15 @@ void pass2 ()
 				   PRINT_MSG
 
 synopsis : print_msg (tab, tok, len, ind)
-	   char tab [][MSGLEN+1] ;
-	   token tok [][MSGLEN+1] ;
+	   char tab [][MAXLEN+1] ;
+	   token tok [][MAXLEN+1] ;
 	   short int len [] ;
 	   int ind ;
 purpose : outputs message ind in table (tab, tok, len).
 ******************************************************************************/
-void print_msg (char tab [][MSGLEN+1],
-		token tok [][MSGLEN+1],
+static void
+print_msg (char tab [][MAXLEN+1],
+		token tok [][MAXLEN+1],
 		short int len [],
 		int ind)
 {
@@ -535,7 +549,8 @@ synopsis : output_ascii (str, len)
 purpose : outputs a string in sasm format (NIBASC / CON()), depending on the
   ascii value of characters.
 ******************************************************************************/
-void output_ascii (char *str, int len)
+static void
+output_ascii (char *str, int len)
 {
     char buf[MAXLEN] ;
     char *pbuf ;
@@ -572,14 +587,15 @@ void output_ascii (char *str, int len)
 				    BUILD
 
 synospis : build (tab, tok, len, n1, n2)
-	   char tab [][MSGLEN+1] ;
-	   token tok [][MSGLEN+1] ;
+	   char tab [][MAXLEN+1] ;
+	   token tok [][MAXLEN+1] ;
 	   short int len [] ;
 	   int n1, n2 ;
 purpose : build a list of messages.
 ******************************************************************************/
-void build (char tab[][MSGLEN+1],
-            token tok[][MSGLEN+1],
+static void
+build (char tab[][MAXLEN+1],
+            token tok[][MAXLEN+1],
 	    short int len[],
 	    int n1, int n2)
 {
@@ -596,7 +612,8 @@ void build (char tab[][MSGLEN+1],
 synopsis : header ()
 purpose : print table header, cad EQU table, lowest and highest msg #.
 ******************************************************************************/
-void header ()
+static void
+header (void)
 {
     int i ;
 
@@ -625,7 +642,8 @@ void header ()
 synospsis : terminator ()
 purpose : print "NIBHEX FF"
 ******************************************************************************/
-void terminator ()
+static void
+terminator (void)
 {
     printf ("\n") ;
     printf ("%8sNIBHEX FF       Table terminator\n", NSTR);
@@ -639,7 +657,8 @@ void terminator ()
 synopsis : erreur (errn)
 purpose : declenche une erreur de numero errn
 ******************************************************************************/
-int erreur (int errn)
+static int
+erreur (int errn)
 {
     fprintf (stderr, "amg: error in line %d, ", ln) ;
     switch (errn)

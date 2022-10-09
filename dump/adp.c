@@ -13,11 +13,17 @@
 
 #include "common.h"
 
-#define fgetl(lg,fp)  fread(&(lg),sizeof(long int),1,fp)
+#define fgetl(lg,fp,n) do { \
+			if (fread(&(lg),sizeof(long int),1,(fp)) != 1) { \
+			    fprintf (stderr, "adp: cannot read %s\n", (n)) ; \
+			    exit (1) ; \
+			} \
+		      } while (0)
 
-void format_hex () ;
+static void format_hex (char *str, saddr val, int dig);
 
-int main (int argc, char *argv [])
+int
+main (int argc, char *argv [])
 {
     FILE *fp ;
     char line [MAXLEN + 1], hexvar[MAXLEN+1], type ;
@@ -39,7 +45,7 @@ int main (int argc, char *argv [])
     }
 
     printf ("file %s : ", argv[1]) ;
-    fgetl (magic, fp) ;
+    fgetl (magic, fp, argv[1]) ;
     if ((magic<AOF_MAGIC)||(magic>AO_MAGIC))
     {
 	fprintf (stderr, "adp: %s is not an Areuh object file\n", argv [1]) ;
@@ -51,14 +57,14 @@ int main (int argc, char *argv [])
 	fprintf (stderr, "Wrong version\n") ;
 	exit (1) ;
     }
-    fgetl (p2, fp) ;
-    fgetl (pc, fp) ;
+    fgetl (p2, fp, argv[1]) ;
+    fgetl (pc, fp, argv[1]) ;
 
     printf ("code: length (in nibbles) = %ld\n", pc) ;
 
     fseek (fp, p2, 0) ;
-    fgetl (p3, fp) ;
-    fgetl (nl, fp) ;
+    fgetl (p3, fp, argv[1]) ;
+    fgetl (nl, fp, argv[1]) ;
 
     printf ("public definitions : number = %ld\n", nl) ;
     for (i=1; i<=nl; i++)
@@ -68,7 +74,7 @@ int main (int argc, char *argv [])
 	while ((line [j] = (char) getc (fp)) != '\n') j++ ;
 	line [j]= EOL ;
 	printf (" %-13s, val = ", line) ;     /* LBLLEN + 1 */
-	fgetl (value, fp) ;
+	fgetl (value, fp, argv[1]) ;
 	if (value >= (saddr) 0)
 	{
 	    hex5 (hexvar, value) ;
@@ -97,7 +103,11 @@ int main (int argc, char *argv [])
 	else if (value == LBL_XEQ)
 	{
 	    printf ("-XEQ-") ;
-	    fscanf (fp, "%s\n", line) ;
+	    if (fscanf (fp, "%s\n", line) != 1)
+	    {
+		fprintf (stderr, "cannot read %s\n", argv[1]) ;
+		exit (1) ;
+	    }
 	    printf (", definition = %s", line) ;
 	}
 	else		    /* (value == LBL_SEQ) */
@@ -107,13 +117,17 @@ int main (int argc, char *argv [])
 	printf ("\n") ;
     }
 
-    fgetl (nu, fp) ;
+    fgetl (nu, fp, argv[1]) ;
     printf ("references not resolved: number = %ld\n", nu) ;
     for (i=1; i<=nu; i++)
     {
-	fgetl (characteristic, fp) ;
-	fgetl (pc, fp) ;
-	fscanf (fp, "%s\n", line) ;
+	fgetl (characteristic, fp, argv[1]) ;
+	fgetl (pc, fp, argv[1]) ;
+	if (fscanf (fp, "%s\n", line) != 1)
+	{
+	    fprintf (stderr, "cannot read %s\n", argv[1]) ;
+	    exit (1) ;
+	}
 	printf ("%4d:", i) ;
 	hex5 (hexvar, pc) ;
 	printf (" pc = %s", hexvar) ;
@@ -133,7 +147,8 @@ int main (int argc, char *argv [])
 
 /* function called indirectly, via hex5 */
 
-void format_hex (char *str, saddr val, int dig)
+static void
+format_hex (char *str, saddr val, int dig)
 {
     register int i, h ;
 

@@ -22,9 +22,6 @@ o_init (), o_print (), dump_linker_infos ()
 
 #include "aglobal.h"
 
-extern void dfl_extension (char*, char *, char *) ;
-extern void look_obj (char*, char *) ;
-
 #define fputl(lg,fd)   fwrite((char *)(&(lg)),sizeof(long int),1,fd)
 
 long int zero = 0L ;
@@ -42,7 +39,8 @@ description : open object file and, if modular assembly, mark information for
 
 ******************************************************************************/
 
-void o_init ()
+void
+o_init (void)
 {
     char dfl [MAXLEN+1] ;
 
@@ -83,7 +81,8 @@ description :  burp
 
 ******************************************************************************/
 
-void o_print (char *str, int len)
+void
+o_print (char *str, int len)
 {
     int i ;
     
@@ -107,7 +106,8 @@ description : append to objet file external public definitions (symbolic or
 
 ******************************************************************************/
 
-void dump_linker_infos ()
+void
+dump_linker_infos (void)
 {
     int i ;                       /* index in h_label table */
     struct symbol *pl ;           /* points into a label list */

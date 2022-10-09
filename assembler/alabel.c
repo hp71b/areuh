@@ -22,12 +22,7 @@ ps_label, find_label, add_label, label_value, s_init
 
 #include "aglobal.h"
 
-
-extern saddr calc_expression() ;
-extern char *memoire() ;
-
-struct symbol *find_label (char *label) ;
-struct symbol *add_label (char *label, saddr val, char *exp, char type, char os) ;
+static struct symbol *find_label(char *label) ;
 
 /******************************************************************************
 
@@ -180,7 +175,8 @@ description : find_label searches the symbol list for a given label.
 
 ******************************************************************************/
 
-struct symbol *find_label (char *label)
+static struct symbol *
+find_label (char *label)
 {
     struct symbol *p ;
     int test ;
@@ -212,7 +208,8 @@ note : the symbol list is always sorted by label name.
 
 ******************************************************************************/
 
-struct symbol *add_label (char *label, saddr val, char *exp, char type, char os)
+struct symbol *
+add_label (char *label, saddr val, char *exp, char type, char os)
 {
     struct symbol *p, *s ;
     int b=1 ;
@@ -321,7 +318,7 @@ description : initializes the symbol list. It is structured as follow :
 
 ******************************************************************************/
 
-void s_init ()
+void s_init (void)
 {
     struct symbol *s ;
     int i ;
