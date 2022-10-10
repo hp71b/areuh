@@ -8,50 +8,46 @@ amg \- areuh message generator
 ]
 .SH DESCRIPTION
 .I Amg
-est un générateur de table de messages pour le HP-71.
-Il admet sur l'entrée standard une suite de messages, un
-par ligne et place sur la sortie standard un texte source
-(à assembler avec
-.BR aas (1L))
-constituant ainsi une table de messages à insérer dans
-un source de fichier Lex.
+is a message table generator for the HP-71.
+It reads on standard input a sequence of messages for the HP-71, one
+per line, and writes on standard output the source code to be assembled
+by
+.BR aas (1L).
 .PP
-Un message est spécifié suivant le format suivant :
+The message is specified with the following syntax :
 .RS 5n
 .nf
 	label:message
 .fi
 .RE
-où
+where
 .I label
-est une étiquette symbolique utilisée par l'assembleur et
+is a symbolic label used by the assembler and
 .I message
-est le message. Attention aux espaces superflus.
+is the message itself. Beware of extraneous white spaces in the message.
 .PP
-Les messages sont des suites de caractères. Certains caractères ont
-une signification spéciale. Il s'agit de :
+Messages are chains of characters. Some characters have e special meaning:
 .TP 15
-.B \[
-Introduit un
-.I building block. Si c'est un building block du système,
+.B [
+Begins a
+.I building block.
+If this is a system building block,
 .B amg
-y fait référence, sinon un nouveau building block est généré.
-Le caractère
-.B \]
-marque la fin du building block.
+uses it. Otherwise, a new building block is created.
+.TP
+.B ]
+Ends the building block.
 .TP
 .B ^
-Indique une insertion dans le message. Voir les IDS I pour plus
-de détails.
+Marks an insertion point in the message. See IDS I for more information.
 .TP
 <backslash>
-Neutralise la signification spéciale du caractère suivant, ou
-introduit un caractère non imprimable par son code octal.
+Cancels the special meaning of the next character or allow using a
+non printable character by its octal value.
 .PP
-Le système d'exploitation du HP-71 contient 17 buildings-blocks
-intégrés.
+The HP-71 operating system uses 17 known building-blocks.
 .B Amg
-les reconnaît automatiquement, il s'agit de :
+recognize them automatically. They are:
 .RS 5n
 .nf
  0	"Illegal "
@@ -75,15 +71,14 @@ les reconnaît automatiquement, il s'agit de :
 .RE
 .PP
 .B Amg
-définit le symbole
+defines the symbol
 .B =MSGTBL
-destiné à être référencé dans l'en-tête du fichier Lex. Les symboles
-définis par l'utilisateur sont aussi définis, mais ils sont exportés
-seulement si l'utilisateur a placé un signe
+which is referenced in the haeder of the Lex file. User defined symbols
+can be also exported only if preceded by
 .B =
-au début de l'étiquette.
+at the beginning of the label.
 .PP
-L'exemple suivant est la table des messages de JPC Rom :
+The following example is the message table of JPC Rom:
 .RS 5n
 .nf
 =eHEAD:JPC 
@@ -109,12 +104,11 @@ L'exemple suivant est la table des messages de JPC Rom :
 .SH DIAGNOSTICS
 .PP
 .B Amg
-signale une erreur lorsqu'aucun message ne respecte la règle du
-premier message (longueur multiple de 4), mais génère un source
-quand même.
+produces un error when no message conforms to the rule of the first
+message (length must be a multiple of 4) but generates a source file anyway.
 .SH AUTHORS
-Pierre David
-Janick Taillandier
+Pierre David,
+Janick Taillandier.
 .SH SEE ALSO
 aas(1L),
 ald(1L),

@@ -21,62 +21,62 @@ aas \- areuh assembler
 ] [ file1 ... filen ]
 .SH DESCRIPTION
 .I Aas
-est le cross-assembleur pour le HP-71, qui prend un ou des
-fichiers sources, les assemble et place dans le fichier objet
-soit un Lex ou Bin complet, soit un fichier intermédiaire
-pour édition de liens ultérieure (voir
-.IR ald (1L)).
+ss the cross-assembler for the HP-71. It takes one or more
+source files, process them and produces an object file containig
+either a LEX or BIN file (complete assembly), or an intermediate file 
+to be used in the link phase (separate assembly). See
+.IR ald (1L).
 .PP
-Les options sont :
+Options are :
 .TP 17
 .B -p
-Utilisation interactive : demande les noms des fichiers
-au clavier. Option par défaut lorsqu'il n'y a aucun paramètre.
+Interactive use :
+.I Aas
+prompts for the various file names. It is the default option
+when no parameter is specified.
 .TP
 .BI -l " page length"
-La longueur des pages du
+Page length of the 
 .I listing file
-est fixée à
+is fixed by 
 .I page length
-lignes (72 par défaut).
+lines (72 by default).
 .TP
 .B -A
-Génère un listing d'assemblage avec offset, codes hexadécimaux,
-et texte source. Le listing est envoyé sur la sortie standard.
+Produces an assembly listing with offset, binary code in hexadecimal
+and source code. The listing is sent to standard output.
 .TP
 .BI -a " listing file"
-Génère un listing d'assemblage dans le fichier
+The assembly listing is sent to the file
 .IR "listing file" .
 .TP
-.I -x
-Génère dans le
+.B -x
+Adds a cross references table in the
 .I listing file
-une table des références croisées, indiquant pour chaque
-symbole sa valeur et les numéros des lignes y faisant
-référence.
+showing for each symbol
+its value and the line numbers where the symbol is referenced.
 .TP
 .BI -o " object file"
-Place le code objet dans le fichier spécifié. Par défaut,
-le nom est celui du fichier source avec le suffixe
+Writes the object code in the specified file. By default,
+the objet file name is the name of the source file with
 .IR .as ,
-remplacé par
+extension replaced by
 .I .ao
-en cas d'assemblage séparé, ou
-.B lex
-en assemblage complet. Si
+in case of separate assembly, or
+.I .lex
+in case of complete assembly. If
 .I object file
-est un répertoire, le fichier est placé dans le répertoire
-indiqué avec les règles de renommage ci-dessus (note :
-c'est l'utilisation la plus simple lorsque plusieurs sources
-sont donnés sur la ligne de commandes).
+is a directory, the file is written in this directory and the
+file name follows all the naming rules listed above.
+It is the most convenient way to procede when assembling more
+than one source file.
 .SH AUTHORS
-Pierre David
-Janick Taillandier
+Pierre David,
+Janick Taillandier.
 .SH SEE ALSO
 ald(1L),
 adp(1L),
-amg(1L),
-cp71(1L).
+amg(1L).
 .br
 .I "IDS vol I"
 for HP-71.

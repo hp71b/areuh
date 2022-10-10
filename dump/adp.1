@@ -1,30 +1,27 @@
 .TH ADP 1L
 .SH NAME
-adp \- areuh intermediate file dump
+adp \- areuh intermediate object file dump
 .SH SYNOPSIS
 .B adp
 file
 .SH DESCRIPTION
-.I Adp
-affiche des informations sur le fichier intermédiaire
-spécifié.
-En particulier,
+.B Adp
+displays data about the given intermediate object file.
+In particular,
 .B adp
-affiche la taille du code,
-les symboles externes définis dans ce fichier, ainsi que
-les expressions n'ayant pas pu être résolues à l'assemblage.
+displays the code size,
+external symbols not defined in the file, as well as
+expressions not resolved during assembly.
 .PP
 .B Adp
-a été développé pour des besoins internes et ne doit normalement pas être
-utilisé.
+was developed for internal use and should not normaly be used.
 .SH AUTHORS
-Pierre David
-Janick Taillandier
+Pierre David,
+Janick Taillandier.
 .SH SEE ALSO
 aas(1L),
 ald(1L),
-amg(1L),
-cp71(1L).
+amg(1L).
 .br
 .I "IDS vol I"
 for HP-71.

@@ -21,46 +21,47 @@ ald \- areuh link editor
 ] [ file1 ... filen ]
 .SH DESCRIPTION
 .I Ald
-est le cross-link-editor pour le HP-71, qui prend un ou des
-fichiers intermédiaires, les fusionne et place dans le fichier objet
-un fichier prêt à être transmis au HP-71 (voir
-.IR cp71 (1L)).
+is the cross link editor for the HP-71. It combines one or more 
+intermediate object files, resolves references and output an object file
+ready to be be loaded in the HP-71.
 .PP
-Les options sont :
+The options are :
 .TP 17
 .B -p
-Utilisation interactive : demande les noms des fichiers
-au clavier. Option par défaut lorsqu'il n'y a aucun paramètre.
+Interactive use :
+.I ald
+prompts for the various file names. It is the default option
+when no parameter is specified.
 .TP
 .BI -l " page length"
-La longueur des pages du
+Page length for the
 .I listing file
-est fixée à
+is set to
 .I page length
-lignes (72 par défaut).
+lines (72 by default).
 .TP
 .B -A
-Génère un listing d'édition avec table des symboles.
-Le listing est envoyé sur la sortie standard.
+Produces a link listing with symbols table.
+The listing is sent to standard output.
 .TP
 .BI -a " listing file"
-Génère un listing d'édition dans le fichier
+The link listing is sent to file
 .IR "listing file" .
 .TP
-.I -x
-Génère dans le
+.B -x
+Adds in the 
 .I listing file
-une table des références croisées, indiquant pour chaque
-symbole sa valeur et les offsets dans les fichiers des
-instructions y faisant référence.
+a cross reference table giving for each symbol its value and
+offsets in the various intermediate files where the symbol
+is used.
 .TP
 .BI -o " object file"
-Place le code objet dans le fichier spécifié
-.RB ( lex
-par défaut)
+Stores the object file in the given file
+(by default 
+.B lex).
 .SH AUTHORS
-Pierre David
-Janick Taillandier
+Pierre David,
+Janick Taillandier.
 .SH SEE ALSO
 aas(1L),
 adp(1L),

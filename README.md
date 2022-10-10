@@ -68,21 +68,21 @@ them.  Please, share your modifications.
 The contents of this directory are:
 
 - `Makefile` :
-	The global `Makefile` to generate all programs.
+	the global `Makefile` to generate all programs.
 
 - `assembler` :
-	Source code for `aas` (the assembler).  Some files are
+	source code for `aas` (the assembler).  Some files are
 	shared between assembler, linker and dump (`common.h`,
 	`err.h`), some are shared between assembler and linker
 	(`exp.c`, `mdep.c`).
 	Contains a manual page in French.
 
 - `linker` :
-	Source code for `ald` (the linker).
+	source code for `ald` (the linker).
 	Contains a manual page in French.
 
 - `dump` :
-	Source code for `adp` (the file dumper, used for
+	source code for `adp` (the file dumper, used for
 	debugging).
 	Contains a manual page in French.
 
