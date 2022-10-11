@@ -26,7 +26,7 @@ is a symbolic label used by the assembler and
 .I message
 is the message itself. Beware of extraneous white spaces in the message.
 .PP
-Messages are chains of characters. Some characters have e special meaning:
+Messages are chains of characters. Some characters have a special meaning:
 .TP 15
 .B [
 Begins a
@@ -73,7 +73,7 @@ recognize them automatically. They are:
 .B Amg
 defines the symbol
 .B =MSGTBL
-which is referenced in the haeder of the Lex file. User defined symbols
+which is referenced in the header of the Lex file. User defined symbols
 can be also exported only if preceded by
 .B =
 at the beginning of the label.
@@ -104,7 +104,7 @@ The following example is the message table of JPC Rom:
 .SH DIAGNOSTICS
 .PP
 .B Amg
-produces un error when no message conforms to the rule of the first
+produces an error when no message conforms to the rule of the first
 message (length must be a multiple of 4) but generates a source file anyway.
 .SH AUTHORS
 Pierre David,
